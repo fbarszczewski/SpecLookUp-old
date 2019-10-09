@@ -1,0 +1,65 @@
+﻿<Window x:Class="SpecLookUp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SpecLookUp"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="880" Width="1820" WindowStartupLocation="CenterScreen">
+
+    <Window.Resources>
+        <Style TargetType="TextBlock" x:Key="MenuTextBlock">
+
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="10,0,3,0"/>
+
+        </Style>
+    </Window.Resources>
+    <Window.DataContext>
+        <local:ViewModel/>
+    </Window.DataContext>
+    <Grid>
+        <Grid>
+
+            <TabControl>
+
+                <TabItem Header="Spec.">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="20*"/>
+                        </Grid.RowDefinitions>
+
+
+
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,3" >
+                            <Button Content="Search" Width="120"/>
+                            <TextBlock Text="SO:" Style="{StaticResource MenuTextBlock}"/>
+                            <TextBox Width="90" Margin="0,2"/>
+                            <TextBlock Text="S/N:" Style="{StaticResource MenuTextBlock}"/>
+                            <TextBox Width="90" Margin="0,2"/>
+                        </StackPanel>
+
+                        <DataGrid Grid.Row="1" x:Name="SpecDataGrid"
+                                  ItemsSource="{Binding SpecLogList}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="SO" Width="70"/>
+                                <DataGridTextColumn Header="Device Type" Width="140"/>
+                                <DataGridTextColumn Header="Serial Number" Width="220"/>
+                                <DataGridTextColumn Header="CMAR" Width="160"/>
+                                <DataGridTextColumn Header="Model" Width="140"/>
+                                <DataGridTextColumn Header="Description" Width="620"/>
+                                <DataGridTextColumn Header="Comments" Width="auto"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+
+
+                </TabItem>
+
+            </TabControl>
+
+        </Grid>
+        
+    </Grid>
+</Window>
