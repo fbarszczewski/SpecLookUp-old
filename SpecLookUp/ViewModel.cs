@@ -13,7 +13,7 @@ namespace SpecLookUp
     public class ViewModel : INotifyPropertyChanged
     {
         private DataTable _specLogList;
-        private MysqlWorker _database;
+        private readonly MysqlWorker _database;
         public DataTable SpecLogList
         {
             get => _specLogList;
@@ -29,7 +29,8 @@ namespace SpecLookUp
         public ViewModel()
         {
             _database=new MysqlWorker();
-            SpecLogList = _database.GetFromDataBase("SELECT * FROM Devices");
+            //SpecLogList = _database.GetFromDataBase("SELECT model as 'Device Model' FROM Devices");
+            SpecLogList = _database.GetAll();
         }
 
 

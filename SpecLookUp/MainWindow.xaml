@@ -5,14 +5,17 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SpecLookUp"
         mc:Ignorable="d"
-        Title="MainWindow" Height="880" Width="1820" WindowStartupLocation="CenterScreen">
+        Title="SpecSniffer database" Height="880" Width="1820" WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
         <Style TargetType="TextBlock" x:Key="MenuTextBlock">
-
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="Margin" Value="10,0,3,0"/>
-
+        </Style>
+        <Style TargetType="DataGrid">
+            <Setter Property="AutoGenerateColumns" Value="False"/>
+            <Setter Property="AlternatingRowBackground" Value="LightSteelBlue"/>
+            <Setter Property="CanUserAddRows" Value="False"/>
         </Style>
     </Window.Resources>
     <Window.DataContext>
@@ -43,13 +46,35 @@
                         <DataGrid Grid.Row="1" x:Name="SpecDataGrid"
                                   ItemsSource="{Binding SpecLogList}">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="SO" Width="70"/>
-                                <DataGridTextColumn Header="Device Type" Width="140"/>
-                                <DataGridTextColumn Header="Serial Number" Width="220"/>
-                                <DataGridTextColumn Header="CMAR" Width="160"/>
-                                <DataGridTextColumn Header="Model" Width="140"/>
-                                <DataGridTextColumn Header="Description" Width="620"/>
-                                <DataGridTextColumn Header="Comments" Width="auto"/>
+                                <DataGridTextColumn Header="SO" MaxWidth="70" Binding="{Binding saveReference}"/>
+                                <DataGridTextColumn Header="Serial Number" MaxWidth="220" Binding="{Binding serial}"/>
+                                <DataGridTextColumn Header="Description" MaxWidth="520" Binding="{Binding description}"/>
+                                <DataGridTextColumn Header="Graphic Card's" MaxWidth="340" Binding="{Binding gpu}"/>
+                                <DataGridTextColumn Header="Comments" Binding="{Binding comments}"/>
+                                <DataGridTextColumn Header="CMAR" Binding="{Binding cmarLicense}"/>
+                                <DataGridTextColumn Header="Storage S/N" Binding="{Binding hddSN}"/>
+                                <DataGridTextColumn Header="Storage P/N" Binding="{Binding hddPN}"/>
+                                <DataGridTextColumn Header="Storage Size" Binding="{Binding hddSize}"/>
+                                <DataGridTextColumn Header="Storage Health" Binding="{Binding hddHealth}"/>
+                                <DataGridTextColumn Header="Model" Binding="{Binding model}"/>
+                                <DataGridTextColumn Header="Device Type" Binding="{Binding chassisType}"/>
+                                <DataGridTextColumn Header="CPU" Binding="{Binding Cpu}"/>
+                                <DataGridTextColumn Header="Memory Banks" Binding="{Binding ramSize}"/>
+                                <DataGridTextColumn Header="Memory S/N" Binding="{Binding ramSN}"/>
+                                <DataGridTextColumn Header="Memory P/N" Binding="{Binding ramPN}"/>
+                                <DataGridTextColumn Header="ODD" Binding="{Binding optical}"/>
+                                <DataGridTextColumn Header="Operating System" Binding="{Binding osName}"/>
+                                <DataGridTextColumn Header="OS Build" Binding="{Binding osBuild}"/>
+                                <DataGridTextColumn Header="OS Language" Binding="{Binding osLanguages}"/>
+                                <DataGridTextColumn Header="OS ID" Binding="{Binding osSerial}"/>
+                                <DataGridTextColumn Header="OS License" Binding="{Binding osLicense}"/>
+                                <DataGridTextColumn Header="OS Label" Binding="{Binding licenseLabel}"/>
+                                <DataGridTextColumn Header="Battery P/N" Binding="{Binding batteryPN}"/>
+                                <DataGridTextColumn Header="Battery Health" Binding="{Binding batteryHealth}"/>
+                                <DataGridTextColumn Header="Battery Charge" Binding="{Binding batteryCharge}"/>
+                                <DataGridTextColumn Header="RP" Binding="{Binding rp}"/>
+                                <DataGridTextColumn Header="Time Stamp" Binding="{Binding date}"/>
+
                             </DataGrid.Columns>
                         </DataGrid>
                     </Grid>
