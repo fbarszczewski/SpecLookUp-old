@@ -36,11 +36,11 @@
 
 
                         <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,3" >
-                            <Button Content="Search" Width="120"/>
+                            <Button Content="Search" Width="120" Command="{Binding DeviceSearchCommand}"/>
                             <TextBlock Text="SO:" Style="{StaticResource MenuTextBlock}"/>
-                            <TextBox Width="90" Margin="0,2"/>
+                            <TextBox Width="90" Margin="0,2" Text="{Binding SoTextBox}"/>
                             <TextBlock Text="S/N:" Style="{StaticResource MenuTextBlock}"/>
-                            <TextBox Width="90" Margin="0,2"/>
+                            <TextBox Width="90" Margin="0,2" Text="{Binding SnTextBox}"/>
                         </StackPanel>
 
                         <DataGrid Grid.Row="1" x:Name="SpecDataGrid"

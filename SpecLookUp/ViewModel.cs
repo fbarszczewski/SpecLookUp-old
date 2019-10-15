@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using SpecLookUp.DAL;
 using SpecLookUp.Model;
 
@@ -24,15 +25,24 @@ namespace SpecLookUp
             }
         }
 
-        public SpecLog SpecLogSelected { get; set; }
+        public string SoTextBox { get; set; }
+        public string SnTextBox { get; set; }
 
         public ViewModel()
         {
-            _database=new MysqlWorker();
-            //SpecLogList = _database.GetFromDataBase("SELECT model as 'Device Model' FROM Devices");
-            SpecLogList = _database.GetAll();
+            _database = new MysqlWorker();
         }
 
+
+
+        #region Commands
+
+        public ICommand DeviceSearchCommand
+        {
+            get { return new RelayCommand(argument => SpecLogList = _database.GetFromDataBase(QueryCreator.Device(SoTextBox,SnTextBox))); }
+        }
+
+        #endregion
 
         #region INotify Property handler
 

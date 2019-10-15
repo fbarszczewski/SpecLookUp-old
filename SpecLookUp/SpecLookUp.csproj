@@ -57,7 +57,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="DAL\MysqlWorker.cs" />
+    <Compile Include="Model\QueryCreator.cs" />
     <Compile Include="Model\SpecLog.cs" />
+    <Compile Include="RelayCommand.cs" />
     <Compile Include="ViewModel.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
