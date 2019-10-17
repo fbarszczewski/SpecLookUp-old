@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using SpecLookUp.DAL;
 using SpecLookUp.Model;
@@ -15,13 +16,27 @@ namespace SpecLookUp
     {
         private DataTable _specLogList;
         private readonly MysqlWorker _database;
-        public DataTable SpecLogList
+        private Device _selectedDevice;
+        private List<Device> _deviceList;
+
+
+        public List<Device> DeviceList
         {
-            get => _specLogList;
+            get => _deviceList;
             set
             {
-                _specLogList = value;
-                RaisePropertyChanged("SpecLogList");
+                _deviceList = value;
+                RaisePropertyChanged("DeviceList");
+            }
+        }
+
+        public Device SelectedDevice
+        {
+            get => _selectedDevice;
+            set
+            {
+                _selectedDevice = value;
+                RaisePropertyChanged("SelectedDevice");
             }
         }
 
@@ -31,15 +46,31 @@ namespace SpecLookUp
         public ViewModel()
         {
             _database = new MysqlWorker();
+            GetDeviceList();
         }
 
 
+        private void GetDeviceList()
+        {
+            DeviceList = _database.GetDevices(QueryCreator.Device(SoTextBox,SnTextBox));
+        }
+
+        private void DisplayEditWindow()
+        {
+            var editWindow=new EditWindow(SelectedDevice);
+            editWindow.ShowDialog();
+        }
 
         #region Commands
 
-        public ICommand DeviceSearchCommand
+        public ICommand EditSelectedCommand
         {
-            get { return new RelayCommand(argument => SpecLogList = _database.GetFromDataBase(QueryCreator.Device(SoTextBox,SnTextBox))); }
+            get { return new RelayCommand(argument => DisplayEditWindow()); }
+        }
+
+        public ICommand SearchCommand
+        {
+            get { return new RelayCommand(argument => GetDeviceList()); }
         }
 
         #endregion
@@ -56,3 +87,4 @@ namespace SpecLookUp
         #endregion
     }
 }
+

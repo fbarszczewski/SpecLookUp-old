@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace SpecLookUp.Model
 {
-    public class SpecLog
+    public class Device :INotifyPropertyChanged
     {
+        private string _deviceModel;
         public int Id { get; set; }
         public string Rp { get; set; }
         public string So { get; set; }
@@ -15,10 +17,25 @@ namespace SpecLookUp.Model
         public string Date { get; set; }
         public string Manufacturer { get; set; }
         public string DeviceSerial { get; set; }
-        public string DeviceModel { get; set; }
+
+        public string DeviceModel
+        {
+            get => _deviceModel;
+            set
+            { 
+                _deviceModel = value;
+                RaisePropertyChanged("DeviceModel");
+            }
+        }
+
         public string Chassis { get; set; }
+        public string Description
+        {
+            get => $"{DeviceModel} {Cpu}\n{RamSizeSum}GB/{HddSize.Replace(Environment.NewLine,"/")}/{Optical}/{Resolution}/{OsLabel}";
+        }
         public string RamSizeSum { get; set; }
         public string RamSize { get; set; }
+
         public string RamPn { get; set; }
         public string RamSn { get; set; }
         public string Cpu { get; set; }
@@ -41,5 +58,16 @@ namespace SpecLookUp.Model
         public string BatteryPn { get; set; }
         public string BatterySn { get; set; }
         public string BatteryCharge { get; set; }
+
+        #region INotify Property handler
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void RaisePropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        #endregion
     }
 }

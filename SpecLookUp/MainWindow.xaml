@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SpecLookUp"
         mc:Ignorable="d"
-        Title="SpecSniffer database" Height="880" Width="1820" WindowStartupLocation="CenterScreen">
+        Title="SpecSniffer database" Height="880" Width="1820" WindowStartupLocation="CenterScreen" FontSize="14">
 
     <Window.Resources>
         <Style TargetType="TextBlock" x:Key="MenuTextBlock">
@@ -35,45 +35,61 @@
 
 
 
-                        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,3" >
-                            <Button Content="Search" Width="120" Command="{Binding DeviceSearchCommand}"/>
-                            <TextBlock Text="SO:" Style="{StaticResource MenuTextBlock}"/>
-                            <TextBox Width="90" Margin="0,2" Text="{Binding SoTextBox}"/>
-                            <TextBlock Text="S/N:" Style="{StaticResource MenuTextBlock}"/>
-                            <TextBox Width="90" Margin="0,2" Text="{Binding SnTextBox}"/>
-                        </StackPanel>
+                        <Grid Grid.Row="0" Margin="0,3">
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                                <StackPanel Orientation="Horizontal" Grid.Column="0" HorizontalAlignment="Left">
+                                    <Button Content="Search" Width="120" Command="{Binding SearchCommand}"/>
+                                    <TextBlock Text="SO:" Style="{StaticResource MenuTextBlock}"/>
+                                    <TextBox Width="90" Margin="0,2" Text="{Binding SoTextBox}"/>
+                                    <TextBlock Text="S/N:" Style="{StaticResource MenuTextBlock}"/>
+                                    <TextBox Width="190" Margin="0,2" Text="{Binding SnTextBox}"/>
+                                </StackPanel>
+
+                            
+                            <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right">
+                                <Button Content="Edit Selected" Width="120" Command="{Binding EditSelectedCommand}"/>
+                            </StackPanel>
+                        </Grid>
+
 
                         <DataGrid Grid.Row="1" x:Name="SpecDataGrid"
-                                  ItemsSource="{Binding SpecLogList}">
+                                  ItemsSource="{Binding DeviceList}"
+                                  SelectedItem="{Binding SelectedDevice}">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="SO" MaxWidth="70" Binding="{Binding saveReference}"/>
-                                <DataGridTextColumn Header="Serial Number" MaxWidth="220" Binding="{Binding serial}"/>
-                                <DataGridTextColumn Header="Description" MaxWidth="520" Binding="{Binding description}"/>
-                                <DataGridTextColumn Header="Graphic Card's" MaxWidth="340" Binding="{Binding gpu}"/>
-                                <DataGridTextColumn Header="Comments" Binding="{Binding comments}"/>
-                                <DataGridTextColumn Header="CMAR" Binding="{Binding cmarLicense}"/>
-                                <DataGridTextColumn Header="Storage S/N" Binding="{Binding hddSN}"/>
-                                <DataGridTextColumn Header="Storage P/N" Binding="{Binding hddPN}"/>
-                                <DataGridTextColumn Header="Storage Size" Binding="{Binding hddSize}"/>
-                                <DataGridTextColumn Header="Storage Health" Binding="{Binding hddHealth}"/>
-                                <DataGridTextColumn Header="Model" Binding="{Binding model}"/>
-                                <DataGridTextColumn Header="Device Type" Binding="{Binding chassisType}"/>
+                                <DataGridTextColumn Header="SO" MaxWidth="70" Binding="{Binding So}"/>
+                                <DataGridTextColumn Header="Serial Number" MaxWidth="220" Binding="{Binding DeviceSerial}"/>
+                                <DataGridTextColumn Header="Description" MaxWidth="520" Binding="{Binding Description}"/>
+                                <DataGridTextColumn Header="Graphic Card's" MaxWidth="340" Binding="{Binding Gpu}"/>
+                                <DataGridTextColumn Header="Comments" Binding="{Binding Comments}"/>
+                                <DataGridTextColumn Header="CMAR" Binding="{Binding OsCmar}"/>
+                                <DataGridTextColumn Header="Storage S/N" Binding="{Binding HddSn}"/>
+                                <DataGridTextColumn Header="Storage P/N" Binding="{Binding HddPn}"/>
+                                <DataGridTextColumn Header="Storage Size" Binding="{Binding HddSize}"/>
+                                <DataGridTextColumn Header="Storage Health" Binding="{Binding HddHealth}"/>
+                                <DataGridTextColumn Header="Model" Binding="{Binding DeviceModel}"/>
+                                <DataGridTextColumn Header="Device Type" Binding="{Binding Chassis}"/>
                                 <DataGridTextColumn Header="CPU" Binding="{Binding Cpu}"/>
-                                <DataGridTextColumn Header="Memory Banks" Binding="{Binding ramSize}"/>
-                                <DataGridTextColumn Header="Memory S/N" Binding="{Binding ramSN}"/>
-                                <DataGridTextColumn Header="Memory P/N" Binding="{Binding ramPN}"/>
-                                <DataGridTextColumn Header="ODD" Binding="{Binding optical}"/>
-                                <DataGridTextColumn Header="Operating System" Binding="{Binding osName}"/>
-                                <DataGridTextColumn Header="OS Build" Binding="{Binding osBuild}"/>
-                                <DataGridTextColumn Header="OS Language" Binding="{Binding osLanguages}"/>
-                                <DataGridTextColumn Header="OS ID" Binding="{Binding osSerial}"/>
-                                <DataGridTextColumn Header="OS License" Binding="{Binding osLicense}"/>
-                                <DataGridTextColumn Header="OS Label" Binding="{Binding licenseLabel}"/>
-                                <DataGridTextColumn Header="Battery P/N" Binding="{Binding batteryPN}"/>
-                                <DataGridTextColumn Header="Battery Health" Binding="{Binding batteryHealth}"/>
-                                <DataGridTextColumn Header="Battery Charge" Binding="{Binding batteryCharge}"/>
-                                <DataGridTextColumn Header="RP" Binding="{Binding rp}"/>
-                                <DataGridTextColumn Header="Time Stamp" Binding="{Binding date}"/>
+                                <DataGridTextColumn Header="Memory Banks" Binding="{Binding RamSize}"/>
+                                <DataGridTextColumn Header="Memory S/N" Binding="{Binding RamSn}"/>
+                                <DataGridTextColumn Header="Memory P/N" Binding="{Binding RamPn}"/>
+                                <DataGridTextColumn Header="ODD" Binding="{Binding Optical}"/>
+                                <DataGridTextColumn Header="Operating System" Binding="{Binding OsName}"/>
+                                <DataGridTextColumn Header="OS Build" Binding="{Binding OsBuild}"/>
+                                <DataGridTextColumn Header="OS Language" Binding="{Binding OsLang}"/>
+                                <DataGridTextColumn Header="OS ID" Binding="{Binding OsSerial}"/>
+                                <DataGridTextColumn Header="OS Key" Binding="{Binding OsKey}"/>
+                                <DataGridTextColumn Header="OS Label" Binding="{Binding OsLabel}"/>
+                                <DataGridTextColumn Header="Battery P/N" Binding="{Binding BatteryPn}"/>
+                                <DataGridTextColumn Header="Battery Health" Binding="{Binding BatteryHealth}"/>
+                                <DataGridTextColumn Header="Battery Charge" Binding="{Binding BatteryCharge}"/>
+                                <DataGridTextColumn Header="RP" Binding="{Binding Rp}"/>
+                                <DataGridTextColumn Header="Time Stamp" Binding="{Binding Date}" IsReadOnly="True"/>
+                                <DataGridTextColumn Header="Log ID" Binding="{Binding Id}" IsReadOnly="True"/>
 
                             </DataGrid.Columns>
                         </DataGrid>

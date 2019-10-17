@@ -9,15 +9,18 @@ namespace SpecLookUp.Model
     public class QueryCreator
     {
         private static readonly string _deviceSelect = "SELECT saveReference, serial, cmarLicense, comments, gpu, " +
-                                              "CONCAT(model,' ',cpu,'/',ramSizeSum,'GB/',REPLACE(hddSize,'\\r\\n','/'),'/',optical,'/',resolution,'/',LicenseLabel) as description, " +
                                               "model, Cpu, ramSize, ramPN, ramSN, hddSize, hddPN, hddSN, hddHealth, optical, resolution, chassisType," +
-                                              "osName, osBuild,osLanguages, osSerial, osLicense,licenseLabel, batteryPN, batteryHealth, batterySerial, batteryCharge, date,rp  FROM Devices";
+                                              "osName, osBuild,osLanguages, osSerial, osLicense,licenseLabel, batteryPN, batteryHealth, batterySerial, batteryCharge, date,rp,id,manufacturer,ramSizeSum  FROM Devices";
+
+        private static readonly string _deviceNotRemoved = "removed ='0'";
 
         public static string Device(string so,string sn)
         {
             List<string> searchList = new List<string>();
 
             string whereCmd = " ";
+
+            searchList.Add(_deviceNotRemoved);
 
             if(!string.IsNullOrWhiteSpace(so))
             {
@@ -29,12 +32,10 @@ namespace SpecLookUp.Model
                 searchList.Add($"serial LIKE '%{sn.Trim()}%'");
             }
 
-            if(searchList.Count>0)
-            {
-                whereCmd = $"WHERE {string.Join(" AND ",searchList)} ";
-            }
+            whereCmd = $"WHERE {string.Join(" AND ",searchList)} ";
 
-            return $"{_deviceSelect} {whereCmd} ORDER BY id DESC LIMIT 100";
+
+            return $"{_deviceSelect} {whereCmd} ORDER BY id DESC LIMIT 50";
         }
     }
 }
