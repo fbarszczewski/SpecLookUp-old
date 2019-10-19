@@ -15,7 +15,7 @@
         </Style>
         <Style TargetType="DataGrid">
             <Setter Property="AutoGenerateColumns" Value="False"/>
-            <Setter Property="AlternatingRowBackground" Value="LightSteelBlue"/>
+            <Setter Property="AlternatingRowBackground" Value="#FFCFDBEA"/>
             <Setter Property="CanUserAddRows" Value="False"/>
         </Style>
         <converter:SelectedDeviceToEnabledConverter x:Key="SelectedDeviceToEnabled"/>
