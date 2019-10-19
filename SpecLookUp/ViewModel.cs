@@ -14,8 +14,6 @@ namespace SpecLookUp
 {
     public class ViewModel : INotifyPropertyChanged
     {
-        private DataTable _specLogList;
-        private readonly MysqlWorker _database;
         private Device _selectedDevice;
         private List<Device> _deviceList;
 
@@ -45,20 +43,20 @@ namespace SpecLookUp
 
         public ViewModel()
         {
-            _database = new MysqlWorker();
             GetDeviceList();
         }
 
 
         private void GetDeviceList()
         {
-            DeviceList = _database.GetDevices(QueryCreator.Device(SoTextBox,SnTextBox));
+            DeviceList = MysqlWorker.GetDevices(QueryCreator.Device(SoTextBox,SnTextBox));
         }
 
         private void DisplayEditWindow()
         {
             var editWindow=new EditWindow(SelectedDevice);
             editWindow.ShowDialog();
+            GetDeviceList();
         }
 
         #region Commands

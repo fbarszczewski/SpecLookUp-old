@@ -5,13 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SpecLookUp"
         mc:Ignorable="d"
-        Title="Edit Device Log" Height="432" Width="648.333" WindowStartupLocation="CenterScreen" FontSize="16" ResizeMode="NoResize" ShowInTaskbar="False" Topmost="True">
+        Title="Edit Device Log" Height="375" Width="677.833" WindowStartupLocation="CenterScreen" FontSize="16" ResizeMode="NoResize" ShowInTaskbar="False" Topmost="True">
     <Grid  >
 
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto" MinHeight="128"/>
+            <RowDefinition Height="auto" MinHeight="161"/>
+            <RowDefinition/>
         </Grid.RowDefinitions>
 
 
@@ -25,45 +25,64 @@
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" >
                         <TextBlock Text="Device: " VerticalAlignment="Center" Width="90"/>
-                        <TextBox MinWidth="140" Margin="0,2" VerticalAlignment="Center" x:Name="DeviceTBox" Width="199"/>
+                        <TextBox Margin="0,2" VerticalAlignment="Center" Width="180" x:Name="DeviceTBox"/>
+                        <TextBlock Text="Serial:" VerticalAlignment="Center" Width="43" Margin="19,0" />
+                        <TextBox Margin="0,2" VerticalAlignment="Center" Width="259" x:Name="SerialTBox"/>
 
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                        <TextBlock Text="Serial:" VerticalAlignment="Center" Width="90" />
-                        <TextBox MinWidth="200" Margin="0,2" VerticalAlignment="Center" x:Name="SerialTBox"/>
+
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                        <TextBlock Text="Description: " VerticalAlignment="Center" Width="90" />
-                        <TextBox Width="480" Margin="0,2" VerticalAlignment="Center" x:Name="DescriptionTBox" Height="46"/>
+                        <TextBlock Text="Description: " VerticalAlignment="Top" Width="90" />
+                        <TextBox Width="520" Margin="0,2" VerticalAlignment="Center" x:Name="DescriptionTBox" Height="46"/>
                     </StackPanel>
                 </StackPanel>
             </StackPanel>
         </StackPanel>
 
         <StackPanel Grid.Row="1" Margin="15,5">
-            <TextBlock Text="User Info" VerticalAlignment="Top" FontWeight="Bold"  Margin="5,0,0,-6" Padding="0"/>
+            <TextBlock Text="Edit Log" VerticalAlignment="Top" FontWeight="Bold"  Margin="5,0,0,-6" Padding="0"/>
             <StackPanel Background="#FFE5E8EC" Margin="5,5">
 
 
                 <StackPanel Margin="10,8">
 
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" >
-                        <TextBlock Text="User: " VerticalAlignment="Center" Width="90" />
-                        <TextBox MinWidth="140" Margin="0,2" VerticalAlignment="Center" x:Name="RpTBox" Width="199"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="145*"/>
+                            <ColumnDefinition Width="146*"/>
+                        </Grid.ColumnDefinitions>
 
-                    </StackPanel>
 
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                        <TextBlock Text="Sale Order:" VerticalAlignment="Center" Width="90"/>
-                        <TextBox MinWidth="200" Margin="0,2" VerticalAlignment="Center" x:Name="SoTBox"/>
-                    </StackPanel>
+                        <StackPanel Grid.Column="0">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                                <TextBlock Text="Sale Order:" VerticalAlignment="Center" Width="90"/>
+                                <TextBox Margin="0,2" VerticalAlignment="Center" Width="180" x:Name="SoTBox" MaxLines="1" MaxLength="10"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" >
+                                <TextBlock Text="User: " VerticalAlignment="Center" Width="90" />
+                                <TextBox Margin="0,2" VerticalAlignment="Center"  Width="180" x:Name="RpTBox" MaxLength="6" MaxLines="1"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                                <TextBlock Text="OS Label:" VerticalAlignment="Center" Width="90"/>
+                                <TextBox Margin="0,2" VerticalAlignment="Center" Width="180" x:Name="LabelTBox" MaxLength="50" MaxLines="1"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                                <TextBlock Text="CMAR:" VerticalAlignment="Center" Width="90"/>
+                                <TextBox Margin="0,2" VerticalAlignment="Center" Width="180" x:Name="CmarTBox" MaxLength="14" MaxLines="1"/>
+                            </StackPanel>
+                        </StackPanel>
 
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                        <TextBlock Text="Comments: " VerticalAlignment="Center" Width="90"/>
-                        <TextBox Width="480" Margin="0,2" VerticalAlignment="Center" Height="85" x:Name="CommentsTBox"/>
-                    </StackPanel>
+                        <StackPanel  HorizontalAlignment="Left" Grid.Column="1" Width="288">
+                            <TextBlock Text="Comments: " VerticalAlignment="Center" HorizontalAlignment="Left" Margin="-16,0,0,0" Width="99" Height="22"/>
+                            <TextBox Margin="-15,2,-17,2" VerticalAlignment="Center" Height="82" x:Name="CommentsTBox" MaxLength="255" MaxLines="6"/>
+                        </StackPanel>
+
+                    </Grid>
+
                 </StackPanel>
 
 
@@ -74,9 +93,7 @@
 
 
 
-
-
-        <Grid Grid.Row="2" Margin="15,-5,15,0">
+        <Grid Grid.Row="1" Margin="15,156,15,0" Grid.RowSpan="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="160"/>
                 <ColumnDefinition Width="160"/>
@@ -84,8 +101,8 @@
                 <ColumnDefinition Width="160"/>
             </Grid.ColumnDefinitions>
 
-            <Button Grid.Column="0" Content="Update" Margin="5,5" Height="34"/>
-            <Button Grid.Column="1" Content="Remove" Margin="5,5" Height="34"/>
+            <Button Grid.Column="0" Content="Update" Margin="5,5" Height="34" Click="Update_Click"/>
+            <Button Grid.Column="1" Content="Remove" Margin="5,5" Height="34" Click="Remove_Click"/>
         </Grid>
     </Grid>
 </Window>

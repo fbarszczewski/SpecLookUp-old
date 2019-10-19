@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SpecLookUp.Model
 {
-    public class Device :INotifyPropertyChanged
+    public class Device 
     {
         private string _deviceModel;
         public int Id { get; set; }
@@ -18,15 +18,7 @@ namespace SpecLookUp.Model
         public string Manufacturer { get; set; }
         public string DeviceSerial { get; set; }
 
-        public string DeviceModel
-        {
-            get => _deviceModel;
-            set
-            { 
-                _deviceModel = value;
-                RaisePropertyChanged("DeviceModel");
-            }
-        }
+        public string DeviceModel { get; set; }
 
         public string Chassis { get; set; }
         public string Description
@@ -59,15 +51,6 @@ namespace SpecLookUp.Model
         public string BatterySn { get; set; }
         public string BatteryCharge { get; set; }
 
-        #region INotify Property handler
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void RaisePropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        #endregion
     }
 }

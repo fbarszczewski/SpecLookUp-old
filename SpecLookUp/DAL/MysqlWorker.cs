@@ -1,54 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Runtime.CompilerServices;
+using System.Windows;
 using MySql.Data.MySqlClient;
 using SpecLookUp.Model;
 
 namespace SpecLookUp.DAL
 {
-    public class MysqlWorker
+    public static class MysqlWorker
     {
-        private readonly MySqlConnection _connection;
+        private const string ConnString = "SERVER = remotemysql.com" + ";USERID= IalS35jGSf" + ";PASSWORD= lHxoGp4AQC" + ";DATABASE= IalS35jGSf" + ";Connection Timeout=10;";
 
-        private readonly string _connString =
-            "SERVER= remotemysql.com" +
-            ";USERID= IalS35jGSf" +
-            ";PASSWORD= lHxoGp4AQC" +
-            ";DATABASE= IalS35jGSf" +
-            ";Connection Timeout=10;";
+        private static readonly MySqlConnection Connection = new MySqlConnection {ConnectionString = ConnString};
 
-        #region command string
 
-        private readonly string _selectBody = "SELECT saveReference, serial, cmarLicense, comments, gpu, " +
-                                              "CONCAT(model,' ',cpu,'/',ramSizeSum,'GB/',REPLACE(hddSize,'\\r\\n','/'),'/',optical,'/',resolution,'/',LicenseLabel) as description, " +
-                                              "model, Cpu, ramSize, ramPN, ramSN, hddSize, hddPN, hddSN, hddHealth, optical, resolution, chassisType," +
-                                              "osName, osBuild,osLanguages, osSerial, osLicense,licenseLabel, batteryPN, batteryHealth, batterySerial, batteryCharge, date,rp,manufacturer  FROM Devices";
 
-        #endregion
 
-        private MySqlCommand _command;
 
-        public MysqlWorker()
+        public static List<Device> GetDevices(string cmd)
         {
-            _connection = new MySqlConnection {ConnectionString = _connString};
-        }
-
-
-
-
-        public List<Device> GetDevices(string cmd)
-        {
-            var dt = new DataTable();
             var devices = new List<Device>();
             try
             {
-                _connection.Open();
+                Connection.Open();
 
-                _command = new MySqlCommand(cmd, _connection);
-                var reader = _command.ExecuteReader();
+                MySqlCommand command = new MySqlCommand(cmd, Connection);
+                var reader = command.ExecuteReader();
                 while (reader.Read())
                 {
-                    var device = new Device
+                    devices.Add(new Device
                     {
                         Id = reader.GetInt32("Id"),
                         Manufacturer = reader.GetString("manufacturer"),
@@ -82,21 +63,98 @@ namespace SpecLookUp.DAL
                         OsCmar = reader.GetString("cmarLicense"),
                         Date = reader.GetString("date"),
                         Rp = reader.GetString("rp")
-                    };
-
-                    devices.Add(device);
+                    });
                 }
             }
             catch (Exception e)
             {
-                throw;
+                 devices.Add(new  Device {DeviceModel = e.Message});
             }
             finally
             {
-                _connection.Close();
+                if(Connection!=null) Connection.Close();
             }
 
             return devices;
+        }
+
+        public static bool UpdateDevice(Device selectedDevice)
+        {
+            var succeed = false;
+            try
+            {
+                Connection.Open();
+                MySqlCommand cmd = new MySqlCommand();
+                cmd.Connection = Connection;
+                cmd.CommandText = "INSERT INTO Devices " +
+                                  "(manufacturer,serial,model,chassisType," +
+                                  "ramSizeSum,ramSize,ramPN,ramSN," +
+                                  "Cpu,hddSize, hddPN, hddSN, hddHealth, " +
+                                  "optical, netDevices, resolution, gpu, osName, " +
+                                  "osBuild, osLanguages, osSerial, osLicense, batteryPN, " +
+                                  "batteryHealth, batterySerial, batteryCharge, deviceList, date," +
+                                  "comments, saveReference, rp, licenseLabel, cmarLicense ) " +
+                                  "SELECT " +
+                                  "manufacturer,serial,model,chassisType," +
+                                  "ramSizeSum,ramSize,ramPN,ramSN," +
+                                  "Cpu,hddSize, hddPN, hddSN, hddHealth, " +
+                                  "optical, netDevices, resolution, gpu, osName, " +
+                                  "osBuild, osLanguages, osSerial, osLicense, batteryPN, " +
+                                  "batteryHealth, batterySerial, batteryCharge, deviceList, date," +
+                                  "@comments, @saveReference, @rp, @licenseLabel, @cmarLicense  " +
+                                  "FROM Devices " +
+                                  "WHERE id=@id";
+
+                cmd.Prepare();
+                cmd.Parameters.AddWithValue("@comments", selectedDevice.Comments);
+                cmd.Parameters.AddWithValue("@saveReference", selectedDevice.So);
+                cmd.Parameters.AddWithValue("@rp", selectedDevice.Rp);
+                cmd.Parameters.AddWithValue("@licenseLabel", selectedDevice.OsLabel);
+                cmd.Parameters.AddWithValue("@cmarLicense", selectedDevice.OsCmar);
+                cmd.Parameters.AddWithValue("@id", selectedDevice.Id);
+
+                cmd.ExecuteNonQuery();
+                succeed = true;
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show($"Couldn't update log\n{e.Message}");
+            }
+            finally
+            {
+                if(Connection!=null) Connection.Close();
+            }
+
+            if(succeed)
+                HideDevice(selectedDevice.Id.ToString());
+
+            return succeed;
+        }
+
+        public static bool HideDevice(string deviceId)
+        {
+            var succeed = false;
+            try
+            {
+                Connection.Open();
+                MySqlCommand cmd=new MySqlCommand();
+                cmd.Connection = Connection;
+                cmd.CommandText = "UPDATE Devices SET visible='1' WHERE id=@id";
+                cmd.Parameters.AddWithValue("@id", deviceId);
+                cmd.Prepare();
+                cmd.ExecuteNonQuery();
+                succeed = true;
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show($"Couldn't hide old log\n{e.Message}");
+            }
+            finally
+            {
+                if(Connection!=null) Connection.Close();
+            }
+            return succeed;
+
         }
     }
 }
