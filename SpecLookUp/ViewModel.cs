@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using SpecLookUp.DAL;
 using SpecLookUp.Model;
@@ -44,6 +45,7 @@ namespace SpecLookUp
         public ViewModel()
         {
             GetDeviceList();
+            AppVersion.IsUpdated();
         }
 
 
@@ -58,6 +60,8 @@ namespace SpecLookUp
             editWindow.ShowDialog();
             GetDeviceList();
         }
+
+
 
         #region Commands
 

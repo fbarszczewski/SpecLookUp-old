@@ -22,5 +22,14 @@ namespace SpecLookUp
         {
             InitializeComponent();
         }
+
+        private void SpecDataGrid_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
+        {
+        }
+
+        private void SpecDataGrid_SelectedCellsChanged_1(object sender, SelectedCellsChangedEventArgs e)
+        {
+            MessageBox.Show(sender.ToString());
+        }
     }
 }

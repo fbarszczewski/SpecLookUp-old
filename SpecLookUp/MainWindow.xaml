@@ -66,7 +66,7 @@
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="SO" MaxWidth="70" Binding="{Binding So}"/>
                                 <DataGridTextColumn Header="Serial Number" MaxWidth="220" Binding="{Binding DeviceSerial}"/>
-                                <DataGridTextColumn Header="Description" MaxWidth="520" Binding="{Binding Description}" IsReadOnly="True"/>
+                                <DataGridTextColumn Header="Description" MaxWidth="520" Binding="{Binding Description}" IsReadOnly="True" />
                                 <DataGridTextColumn Header="Graphic Card's" MaxWidth="340" Binding="{Binding Gpu}"/>
                                 <DataGridTextColumn Header="Comments" Binding="{Binding Comments}"/>
                                 <DataGridTextColumn Header="CMAR" Binding="{Binding OsCmar}"/>

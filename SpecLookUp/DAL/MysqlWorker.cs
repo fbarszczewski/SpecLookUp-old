@@ -156,5 +156,56 @@ namespace SpecLookUp.DAL
             return succeed;
 
         }
+
+        public static string CurrentAppVersion()
+        {
+            string ver = "";
+            try
+            {
+                Connection.Open();
+                MySqlCommand cmd=new MySqlCommand();
+                cmd.Connection = Connection;
+                cmd.CommandText = "SELECT ver FROM Version WHERE app='viewer'";
+                MySqlDataReader dr = cmd.ExecuteReader();
+                dr.Read();
+                ver= dr.GetValue(0).ToString();
+            }
+            catch (Exception e)
+            {
+
+            }
+            finally
+            {
+                if(Connection!=null) Connection.Close();
+            }
+
+            return ver;
+        }
+        public static string ChangeLog()
+        {
+            string changelog = "";
+            try
+            {
+                Connection.Open();
+                MySqlCommand cmd=new MySqlCommand();
+                cmd.Connection = Connection;
+                cmd.CommandText = "SELECT changelog FROM Version WHERE app='viewer'";
+                MySqlDataReader dr = cmd.ExecuteReader();
+                dr.Read();
+                changelog = dr.GetValue(0).ToString().Replace("//","\n");
+            }
+            catch (Exception e)
+            {
+
+            }
+            finally
+            {
+                if(Connection!=null) Connection.Close();
+            }
+
+            return changelog;
+        }
+
+
     }
 }
