@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Media;
-using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Threading;
 using SpecLookUp.DAL;
 using SpecLookUp.Model;
@@ -22,7 +20,6 @@ namespace SpecLookUp
 
         public ViewModel()
         {
-
             //populate dataGrid
             DeviceList = MysqlWorker.GetDevices(QueryCreator.Device(SoTextBox, SnTextBox));
             //check program version
@@ -100,7 +97,7 @@ namespace SpecLookUp
             {
                 RefreshBtnText = "Auto Refresh";
                 _refreshTimer.Stop();
-                if (RefreshIsChecked) 
+                if (RefreshIsChecked)
                     RefreshIsChecked = false;
             }
         }
@@ -125,14 +122,13 @@ namespace SpecLookUp
             //populate dataGrid
             DeviceList = MysqlWorker.GetDevices(QueryCreator.Device(SoTextBox, SnTextBox));
             //play sound
-            if(_deviceList.Count>0)
+            if (_deviceList.Count > 0)
                 SystemSounds.Asterisk.Play();
             else
                 SystemSounds.Hand.Play();
 
             //stop refresh 
             RefreshStop();
-
         }
 
         private void DisplayEditWindow()
@@ -141,7 +137,6 @@ namespace SpecLookUp
             editWindow.ShowDialog();
             GetDeviceList();
         }
-
 
 
         #region Commands

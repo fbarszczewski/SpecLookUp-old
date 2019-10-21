@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Runtime.CompilerServices;
 using System.Windows;
 using MySql.Data.MySqlClient;
 using SpecLookUp.Model;
@@ -10,18 +8,16 @@ namespace SpecLookUp.DAL
 {
     public static class MysqlWorker
     {
-        private const string ConnString = "SERVER = remotemysql.com" + ";USERID= IalS35jGSf" + ";PASSWORD= lHxoGp4AQC" + ";DATABASE= IalS35jGSf" + ";Connection Timeout=10;";
+        private const string ConnString = "SERVER = remotemysql.com" + ";USERID= IalS35jGSf" + ";PASSWORD= lHxoGp4AQC" +
+                                          ";DATABASE= IalS35jGSf" + ";Connection Timeout=10;";
 
         private static readonly MySqlConnection Connection = new MySqlConnection {ConnectionString = ConnString};
 
 
-
-
-
         public static List<Device> GetDevices(string cmd)
         {
-            var devices = new List<Device>(); 
-            MySqlCommand command = new MySqlCommand(cmd, Connection);
+            var devices = new List<Device>();
+            var command = new MySqlCommand(cmd, Connection);
 
             try
             {
@@ -29,7 +25,6 @@ namespace SpecLookUp.DAL
 
                 var reader = command.ExecuteReader();
                 while (reader.Read())
-                {
                     devices.Add(new Device
                     {
                         Id = reader.GetInt32("Id"),
@@ -65,16 +60,16 @@ namespace SpecLookUp.DAL
                         Date = reader.GetString("date"),
                         Rp = reader.GetString("rp")
                     });
-                }
             }
             catch (Exception e)
             {
-                 devices.Add(new  Device {DeviceModel = e.Message});
+                devices.Add(new Device {DeviceModel = e.Message});
             }
             finally
             {
-                if(Connection!=null) Connection.Close();
+                if (Connection != null) Connection.Close();
             }
+
             command.Dispose();
             return devices;
         }
@@ -82,7 +77,7 @@ namespace SpecLookUp.DAL
         public static bool UpdateDevice(Device selectedDevice)
         {
             var succeed = false;
-            MySqlCommand cmd = new MySqlCommand();
+            var cmd = new MySqlCommand();
 
             try
             {
@@ -124,10 +119,10 @@ namespace SpecLookUp.DAL
             }
             finally
             {
-                if(Connection!=null) Connection.Close();
+                if (Connection != null) Connection.Close();
             }
 
-            if(succeed)
+            if (succeed)
                 HideDevice(selectedDevice.Id.ToString());
 
             cmd.Dispose();
@@ -137,7 +132,7 @@ namespace SpecLookUp.DAL
         public static bool HideDevice(string deviceId)
         {
             var succeed = false;
-            MySqlCommand cmd = new MySqlCommand();
+            var cmd = new MySqlCommand();
 
             try
             {
@@ -155,68 +150,68 @@ namespace SpecLookUp.DAL
             }
             finally
             {
-                if(Connection!=null) Connection.Close();
-                
+                if (Connection != null) Connection.Close();
             }
+
             cmd.Dispose();
             return succeed;
-
         }
 
         public static string CurrentAppVersion()
         {
-            string ver = "";
-            MySqlCommand cmd=new MySqlCommand();
+            var ver = "";
+            var cmd = new MySqlCommand();
 
             try
             {
                 Connection.Open();
                 cmd.Connection = Connection;
                 cmd.CommandText = "SELECT ver FROM Version WHERE app='viewer'";
-                MySqlDataReader dr = cmd.ExecuteReader();
+                var dr = cmd.ExecuteReader();
                 dr.Read();
-                ver= dr.GetValue(0).ToString();
+                ver = dr.GetValue(0).ToString();
             }
             catch (Exception e)
             {
-
             }
             finally
             {
-                if(Connection!=null) Connection.Close();
+                if (Connection != null) Connection.Close();
             }
+
             cmd.Dispose();
             return ver;
         }
+
         public static string ChangeLog()
         {
-            string changelog = "";
-            MySqlCommand cmd=new MySqlCommand();
+            var changelog = "";
+            var cmd = new MySqlCommand();
 
             try
             {
                 Connection.Open();
                 cmd.Connection = Connection;
                 cmd.CommandText = "SELECT changelog FROM Version WHERE app='viewer'";
-                MySqlDataReader dr = cmd.ExecuteReader();
+                var dr = cmd.ExecuteReader();
                 dr.Read();
-                changelog = dr.GetValue(0).ToString().Replace("//","\n");
+                changelog = dr.GetValue(0).ToString().Replace("//", "\n");
             }
             catch (Exception e)
             {
-
             }
             finally
             {
-                if(Connection!=null) Connection.Close();
+                if (Connection != null) Connection.Close();
             }
+
             cmd.Dispose();
             return changelog;
         }
 
         public static bool DatabaseConnection()
         {
-            bool connected = false;
+            var connected = false;
             try
             {
                 Connection.Open();
@@ -225,7 +220,10 @@ namespace SpecLookUp.DAL
             catch
             {
             }
-            finally{if(Connection!=null) Connection.Close();}
+            finally
+            {
+                if (Connection != null) Connection.Close();
+            }
 
             return connected;
         }
