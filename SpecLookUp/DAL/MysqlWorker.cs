@@ -206,6 +206,20 @@ namespace SpecLookUp.DAL
             return changelog;
         }
 
+        public static bool DatabaseConnection()
+        {
+            bool connected = false;
+            try
+            {
+                Connection.Open();
+                connected = true;
+            }
+            catch
+            {
+            }
+            finally{if(Connection!=null) Connection.Close();}
 
+            return connected;
+        }
     }
 }

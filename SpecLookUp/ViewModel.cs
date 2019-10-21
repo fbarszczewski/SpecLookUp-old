@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Threading;
 using SpecLookUp.DAL;
 using SpecLookUp.Model;
 
@@ -15,8 +11,24 @@ namespace SpecLookUp
 {
     public class ViewModel : INotifyPropertyChanged
     {
-        private Device _selectedDevice;
+        private readonly DispatcherTimer _refreshTimer;
         private List<Device> _deviceList;
+        private string _refreshBtnText;
+        private int _refreshCount = 10;
+        private bool _refreshIsChecked;
+        private Device _selectedDevice;
+
+        public ViewModel()
+        {
+
+            GetDeviceList();
+            AppVersion.IsUpdated();
+
+            _refreshTimer = new DispatcherTimer {Interval = TimeSpan.FromSeconds(1)};
+            _refreshTimer.Tick += RefreshTimer_Tick;
+            RefreshIsChecked = false;
+            RefreshBtnText = "Auto Refresh";
+        }
 
 
         public List<Device> DeviceList
@@ -42,25 +54,64 @@ namespace SpecLookUp
         public string SoTextBox { get; set; }
         public string SnTextBox { get; set; }
 
-        public ViewModel()
+        public bool RefreshIsChecked
         {
-            GetDeviceList();
-            AppVersion.IsUpdated();
+            get => _refreshIsChecked;
+            set
+            {
+                _refreshIsChecked = value;
+                if (_refreshIsChecked)
+                {
+                    _refreshCount = 10;
+                    _refreshTimer.Start();
+                }
+
+                else
+                {
+                    if (_refreshTimer != null && _refreshTimer.IsEnabled)
+                    {
+                        RefreshBtnText = "Auto Refresh";
+                        _refreshTimer.Stop();
+                    }
+                }
+            }
+        }
+
+        public string RefreshBtnText
+        {
+            get => _refreshBtnText;
+            set
+            {
+                _refreshBtnText = value;
+                RaisePropertyChanged("RefreshBtnText");
+            }
         }
 
 
+        private void RefreshTimer_Tick(object sender, EventArgs e)
+        {
+            _refreshCount--;
+            RefreshBtnText = $"Refresh in {_refreshCount}s";
+
+            if (_refreshCount == 0)
+            {
+                _refreshCount = 10;
+                GetDeviceList();
+                MessageBox.Show("Test");
+            }
+        }
+
         private void GetDeviceList()
         {
-            DeviceList = MysqlWorker.GetDevices(QueryCreator.Device(SoTextBox,SnTextBox));
+            DeviceList = MysqlWorker.GetDevices(QueryCreator.Device(SoTextBox, SnTextBox));
         }
 
         private void DisplayEditWindow()
         {
-            var editWindow=new EditWindow(SelectedDevice);
+            var editWindow = new EditWindow(SelectedDevice);
             editWindow.ShowDialog();
             GetDeviceList();
         }
-
 
 
         #region Commands
@@ -89,4 +140,3 @@ namespace SpecLookUp
         #endregion
     }
 }
-
