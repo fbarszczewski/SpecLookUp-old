@@ -20,12 +20,13 @@ namespace SpecLookUp.DAL
 
         public static List<Device> GetDevices(string cmd)
         {
-            var devices = new List<Device>();
+            var devices = new List<Device>(); 
+            MySqlCommand command = new MySqlCommand(cmd, Connection);
+
             try
             {
                 Connection.Open();
 
-                MySqlCommand command = new MySqlCommand(cmd, Connection);
                 var reader = command.ExecuteReader();
                 while (reader.Read())
                 {
@@ -74,17 +75,18 @@ namespace SpecLookUp.DAL
             {
                 if(Connection!=null) Connection.Close();
             }
-
+            command.Dispose();
             return devices;
         }
 
         public static bool UpdateDevice(Device selectedDevice)
         {
             var succeed = false;
+            MySqlCommand cmd = new MySqlCommand();
+
             try
             {
                 Connection.Open();
-                MySqlCommand cmd = new MySqlCommand();
                 cmd.Connection = Connection;
                 cmd.CommandText = "INSERT INTO Devices " +
                                   "(manufacturer,serial,model,chassisType," +
@@ -128,16 +130,18 @@ namespace SpecLookUp.DAL
             if(succeed)
                 HideDevice(selectedDevice.Id.ToString());
 
+            cmd.Dispose();
             return succeed;
         }
 
         public static bool HideDevice(string deviceId)
         {
             var succeed = false;
+            MySqlCommand cmd = new MySqlCommand();
+
             try
             {
                 Connection.Open();
-                MySqlCommand cmd=new MySqlCommand();
                 cmd.Connection = Connection;
                 cmd.CommandText = "UPDATE Devices SET visible='1' WHERE id=@id";
                 cmd.Parameters.AddWithValue("@id", deviceId);
@@ -152,7 +156,9 @@ namespace SpecLookUp.DAL
             finally
             {
                 if(Connection!=null) Connection.Close();
+                
             }
+            cmd.Dispose();
             return succeed;
 
         }
@@ -160,10 +166,11 @@ namespace SpecLookUp.DAL
         public static string CurrentAppVersion()
         {
             string ver = "";
+            MySqlCommand cmd=new MySqlCommand();
+
             try
             {
                 Connection.Open();
-                MySqlCommand cmd=new MySqlCommand();
                 cmd.Connection = Connection;
                 cmd.CommandText = "SELECT ver FROM Version WHERE app='viewer'";
                 MySqlDataReader dr = cmd.ExecuteReader();
@@ -178,16 +185,17 @@ namespace SpecLookUp.DAL
             {
                 if(Connection!=null) Connection.Close();
             }
-
+            cmd.Dispose();
             return ver;
         }
         public static string ChangeLog()
         {
             string changelog = "";
+            MySqlCommand cmd=new MySqlCommand();
+
             try
             {
                 Connection.Open();
-                MySqlCommand cmd=new MySqlCommand();
                 cmd.Connection = Connection;
                 cmd.CommandText = "SELECT changelog FROM Version WHERE app='viewer'";
                 MySqlDataReader dr = cmd.ExecuteReader();
@@ -202,7 +210,7 @@ namespace SpecLookUp.DAL
             {
                 if(Connection!=null) Connection.Close();
             }
-
+            cmd.Dispose();
             return changelog;
         }
 

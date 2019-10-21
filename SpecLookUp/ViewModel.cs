@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Media;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Threading;
 using SpecLookUp.DAL;
 using SpecLookUp.Model;
@@ -21,9 +23,12 @@ namespace SpecLookUp
         public ViewModel()
         {
 
-            GetDeviceList();
+            //populate dataGrid
+            DeviceList = MysqlWorker.GetDevices(QueryCreator.Device(SoTextBox, SnTextBox));
+            //check program version
             AppVersion.IsUpdated();
 
+            //initialize timer
             _refreshTimer = new DispatcherTimer {Interval = TimeSpan.FromSeconds(1)};
             _refreshTimer.Tick += RefreshTimer_Tick;
             RefreshIsChecked = false;
@@ -37,9 +42,14 @@ namespace SpecLookUp
             set
             {
                 _deviceList = value;
+
+
                 RaisePropertyChanged("DeviceList");
+                RaisePropertyChanged("EntriesCount");
             }
         }
+
+        public string EntriesCount => $"{DeviceList.Count} found";
 
         public Device SelectedDevice
         {
@@ -68,11 +78,7 @@ namespace SpecLookUp
 
                 else
                 {
-                    if (_refreshTimer != null && _refreshTimer.IsEnabled)
-                    {
-                        RefreshBtnText = "Auto Refresh";
-                        _refreshTimer.Stop();
-                    }
+                    RefreshStop();
                 }
             }
         }
@@ -88,6 +94,17 @@ namespace SpecLookUp
         }
 
 
+        private void RefreshStop()
+        {
+            if (_refreshTimer != null && _refreshTimer.IsEnabled)
+            {
+                RefreshBtnText = "Auto Refresh";
+                _refreshTimer.Stop();
+                if (RefreshIsChecked) 
+                    RefreshIsChecked = false;
+            }
+        }
+
         private void RefreshTimer_Tick(object sender, EventArgs e)
         {
             _refreshCount--;
@@ -95,15 +112,27 @@ namespace SpecLookUp
 
             if (_refreshCount == 0)
             {
-                _refreshCount = 10;
+                _refreshTimer.Stop();
                 GetDeviceList();
-                MessageBox.Show("Test");
+                _refreshCount = 10;
+
+                _refreshTimer.Start();
             }
         }
 
         private void GetDeviceList()
         {
+            //populate dataGrid
             DeviceList = MysqlWorker.GetDevices(QueryCreator.Device(SoTextBox, SnTextBox));
+            //play sound
+            if(_deviceList.Count>0)
+                SystemSounds.Asterisk.Play();
+            else
+                SystemSounds.Hand.Play();
+
+            //stop refresh 
+            RefreshStop();
+
         }
 
         private void DisplayEditWindow()
@@ -112,6 +141,7 @@ namespace SpecLookUp
             editWindow.ShowDialog();
             GetDeviceList();
         }
+
 
 
         #region Commands
