@@ -173,6 +173,7 @@ namespace SpecLookUp.DAL
             }
             catch (Exception e)
             {
+                MessageBox.Show($"{e.Message}\n{e.InnerException}");
             }
             finally
             {
