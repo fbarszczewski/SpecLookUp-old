@@ -121,11 +121,7 @@ namespace SpecLookUp
         {
             //populate dataGrid
             DeviceList = MysqlWorker.GetDevices(QueryCreator.Device(SoTextBox, SnTextBox));
-            //play sound
-            if (_deviceList.Count > 0)
-                SystemSounds.Asterisk.Play();
-            else
-                SystemSounds.Hand.Play();
+
 
             //stop refresh 
             RefreshStop();
