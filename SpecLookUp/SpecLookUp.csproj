@@ -52,6 +52,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Converters\LogVisibilityToOpacityConverter.cs" />
     <Compile Include="Converters\SelectedDeviceToEnabledConverter.cs" />
     <Compile Include="DAL\MysqlWorker.cs" />
     <Compile Include="EditWindow.xaml.cs">

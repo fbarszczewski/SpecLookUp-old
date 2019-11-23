@@ -12,16 +12,17 @@ namespace SpecLookUp
     public class ViewModel : INotifyPropertyChanged
     {
         private readonly DispatcherTimer _refreshTimer;
-        private List<Device> _deviceList;
+        private List<Device> _mainLogs;
+        private List<Device> _historyLogs;
         private string _refreshBtnText;
         private int _refreshCount = 10;
         private bool _refreshIsChecked;
-        private Device _selectedDevice;
+        private bool _historyTabSelected;
+        private Device _selectedLog;
 
         public ViewModel()
         {
             //populate dataGrid
-            DeviceList = MysqlWorker.GetDevices(QueryCreator.Device(SoTextBox, SnTextBox));
             //check program version
             AppVersion.IsUpdated();
 
@@ -30,36 +31,67 @@ namespace SpecLookUp
             _refreshTimer.Tick += RefreshTimer_Tick;
             RefreshIsChecked = false;
             RefreshBtnText = "Auto Refresh";
+            SearchLimitInput="50";
+            LogTypeInput="SO";
+            SearchHiddenInput=false;
+            MainLogs = MysqlWorker.GetDevices(QueryCreator.Device(LogReferenceInput, DeviceSnInput,StorageSnInput,CmarInput,LogTypeInput,SearchLimitInput,SearchHiddenInput));
+
         }
 
 
-        public List<Device> DeviceList
+        public List<Device> MainLogs
         {
-            get => _deviceList;
+            get => _mainLogs;
             set
             {
-                _deviceList = value;
+                _mainLogs = value;
 
-
-                RaisePropertyChanged("DeviceList");
+                RaisePropertyChanged("MainLogs");
                 RaisePropertyChanged("EntriesCount");
             }
         }
-
-        public string EntriesCount => $"{DeviceList.Count} found";
-
-        public Device SelectedDevice
+        public List<Device> HistoryLogs
         {
-            get => _selectedDevice;
+            get => _historyLogs;
             set
             {
-                _selectedDevice = value;
-                RaisePropertyChanged("SelectedDevice");
+                _historyLogs = value;
+
+                RaisePropertyChanged("HistoryLogs");
+                RaisePropertyChanged("HistoryCount");
             }
         }
+        public bool HistoryTabSelected 
+            { 
+            get => _historyTabSelected;
+            set
+            {
+                _historyTabSelected=value;
+                RaisePropertyChanged("HistoryTabSelected");
+            }
+            }
 
-        public string SoTextBox { get; set; }
-        public string SnTextBox { get; set; }
+
+        public string EntriesCount => $"{MainLogs.Count} found";
+
+        public string HistoryCount => HistoryLogs!=null? $"{HistoryLogs.Count} found":"";
+
+        public Device SelectedLog
+        {
+            get => _selectedLog;
+            set
+            {
+                _selectedLog = value;
+                RaisePropertyChanged("SelectedLog");
+            }
+        }
+        public string LogTypeInput { get; set; }
+        public string LogReferenceInput { get; set; }
+        public string DeviceSnInput { get; set; }
+        public string StorageSnInput { get; set; }
+        public string CmarInput { get; set; }
+        public string SearchLimitInput { get; set; }
+        public bool SearchHiddenInput { get; set; }
 
         public bool RefreshIsChecked
         {
@@ -120,16 +152,28 @@ namespace SpecLookUp
         private void GetDeviceList()
         {
             //populate dataGrid
-            DeviceList = MysqlWorker.GetDevices(QueryCreator.Device(SoTextBox, SnTextBox));
-
+            MainLogs = MysqlWorker.GetDevices(QueryCreator.Device(LogReferenceInput, DeviceSnInput,StorageSnInput,CmarInput,LogTypeInput,SearchLimitInput,SearchHiddenInput));
 
             //stop refresh 
             RefreshStop();
         }
+        private void GetDeviceHistory()
+        {
+            //populate dataGrid
+            HistoryLogs = MysqlWorker.GetDevices(QueryCreator.History(SelectedLog.DeviceSerial));
+
+            //stop refresh 
+            RefreshStop();
+
+            //focus history tab
+            HistoryTabSelected=true;
+        }
+
+
 
         private void DisplayEditWindow()
         {
-            var editWindow = new EditWindow(SelectedDevice);
+            var editWindow = new EditWindow(SelectedLog);
             editWindow.ShowDialog();
             GetDeviceList();
         }
@@ -145,6 +189,11 @@ namespace SpecLookUp
         public ICommand SearchCommand
         {
             get { return new RelayCommand(argument => GetDeviceList()); }
+        }
+
+        public ICommand DeviceHistoryCommand
+        {
+            get { return new RelayCommand(argument => GetDeviceHistory()); }
         }
 
         #endregion

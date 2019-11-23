@@ -15,20 +15,17 @@
         </Style>
         <Style TargetType="DataGrid">
             <Setter Property="AutoGenerateColumns" Value="False"/>
-            <Setter Property="AlternatingRowBackground" Value="#FFCFDBEA"/>
+            <Setter Property="AlternatingRowBackground" Value="#FFE8F7FF"/>
             <Setter Property="CanUserAddRows" Value="False"/>
+
+
         </Style>
 
-        <Style TargetType="TextBox" x:Key="GridTexBox">
-            <Setter Property="VerticalAlignment" Value="Center"/>
-            <Setter Property="Margin" Value="5,0"/>
-            <Setter Property="IsReadOnly" Value="True"/>
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="SelectionBrush" Value="GhostWhite"/>
-        </Style>
+
+
 
         <converter:SelectedDeviceToEnabledConverter x:Key="SelectedDeviceToEnabled"/>
+        <converter:LogVisibilityToOpacityConverter x:Key="LogVisibilityToOpacity"/>
     </Window.Resources>
     <Window.DataContext>
         <local:ViewModel/>
@@ -38,284 +35,684 @@
 
             <TabControl>
 
-                <TabItem Header="Spec.">
+                <TabItem Header="Database">
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="30"/>
-                            <RowDefinition Height="20*"/>
+                            <RowDefinition Height="35"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="0.05*"/>
                         </Grid.RowDefinitions>
 
                         <Grid Grid.Row="0" Margin="0,3">
 
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
 
-                                <StackPanel Orientation="Horizontal" Grid.Column="0" HorizontalAlignment="Left">
+                            <StackPanel Orientation="Horizontal" Grid.Column="0" HorizontalAlignment="Left">
                                 <StackPanel.InputBindings>
                                     <KeyBinding Command="{Binding SearchCommand}" Key="Return"/>
                                 </StackPanel.InputBindings>
+
+
                                 <Button Content="Search" Width="120" Command="{Binding SearchCommand}"/>
-                                    <TextBlock Text="SO:" Style="{StaticResource MenuTextBlock}"/>
-                                <TextBox Width="90" Margin="0,2" Text="{Binding SoTextBox, UpdateSourceTrigger=PropertyChanged}"/>
-                                    <TextBlock Text="S/N:" Style="{StaticResource MenuTextBlock}"/>
-                                <TextBox Width="190" Margin="0,2" Text="{Binding SnTextBox, UpdateSourceTrigger=PropertyChanged}"/>
-                                    <TextBlock Text="{Binding EntriesCount}" Style="{StaticResource MenuTextBlock}" Margin="10,0"/>
+                                <ComboBox x:Name="TypeCBox" IsEditable="True" Width="60" Height="24" Margin="5,0" Text="{Binding LogTypeInput}">
+                                    <ComboBoxItem Content="SO"/>
+                                    <ComboBoxItem Content="PO"/>
+                                    <ComboBoxItem Content="RMA"/>
+                                    <ComboBoxItem Content="Other"/>
+                                    <ComboBoxItem Content="Any"/>
+                                </ComboBox>
+                                <TextBlock Text="Log Reference:" Style="{StaticResource MenuTextBlock}"/>
+                                <TextBox Width="90" Margin="0,2" Text="{Binding LogReferenceInput, UpdateSourceTrigger=PropertyChanged}"/>
+                                
+                                <TextBlock Text="Device S/N:" Style="{StaticResource MenuTextBlock}"/>
+                                <TextBox Width="190" Margin="0,2" Text="{Binding DeviceSnInput, UpdateSourceTrigger=PropertyChanged}"/>
+                                
+                                <TextBlock Text="Storage S/N:" Style="{StaticResource MenuTextBlock}"/>
+                                <TextBox Width="190" Margin="0,2" Text="{Binding StorageSnInput, UpdateSourceTrigger=PropertyChanged}"/>
 
-                                </StackPanel>
+                                <TextBlock Text="CMAR:" Style="{StaticResource MenuTextBlock}"/>
+                                <TextBox Width="190" Margin="0,2" Text="{Binding CmarInput, UpdateSourceTrigger=PropertyChanged}"/>
 
-                            
-                            <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right">
-                                <ToggleButton Content="{Binding RefreshBtnText}" Width="110" Margin="10,0" IsChecked="{Binding RefreshIsChecked, Mode=TwoWay}"/>
+                                <TextBlock Text="Limit:" Style="{StaticResource MenuTextBlock}"/>
+                                <ComboBox x:Name="LimitCBox" IsEditable="True" Width="60" Height="24" Margin="5,0" Text="{Binding SearchLimitInput}">
+                                    <ComboBoxItem Content="50"/>
+                                    <ComboBoxItem Content="100"/>
+                                    <ComboBoxItem Content="500"/>
+                                    <ComboBoxItem Content="1000"/>
+                                </ComboBox>
+                                <CheckBox x:Name="DeepSearchBox"  Content="Show hidden" VerticalAlignment="Center" IsChecked="{Binding SearchHiddenInput}"/>
 
-                                <Button Content="Edit Selected" Width="120" Command="{Binding EditSelectedCommand}"
-                                        IsEnabled="{Binding SelectedDevice, Mode=OneWay,Converter={StaticResource SelectedDeviceToEnabled}}"/>
+
                             </StackPanel>
+
                         </Grid>
 
 
                         <DataGrid Grid.Row="1" x:Name="SpecDataGrid"
-                                  ItemsSource="{Binding DeviceList}"
-                                  SelectedItem="{Binding SelectedDevice}" Cursor="Arrow" HorizontalGridLinesBrush="Black" VerticalGridLinesBrush="#FFC7C2C2" AreRowDetailsFrozen="True" IsTabStop="True" IsTextSearchEnabled="True" SelectionUnit="CellOrRowHeader" BorderBrush="#FFF3F9FF">
+                                  ItemsSource="{Binding MainLogs}"
+                                  SelectedItem="{Binding SelectedLog}" 
+                                  SelectionMode="Single"
+                                  HorizontalGridLinesBrush="Black" 
+                                  VerticalGridLinesBrush="#FFC7C2C2"
+                                  AreRowDetailsFrozen="True" 
+                                  IsTabStop="True"
+                                  IsTextSearchEnabled="True" 
+                                  BorderBrush="#FFF3F9FF">
+
+                            <DataGrid.Resources>
+                                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" 
+                             Color="#FF86FF6E"/>
+                                <Style TargetType="TextBox">
+                                    <Setter Property="Opacity" Value="0.2"/>
+                                    <Setter Property="Opacity" Value="{Binding LogHiden, Mode=OneWay,Converter={StaticResource LogVisibilityToOpacity}}"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                    <Setter Property="Margin" Value="5,0"/>
+                                    <Setter Property="IsReadOnly" Value="True"/>
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                    <Setter Property="SelectionBrush" Value="GhostWhite"/>
+                                </Style>
+                            </DataGrid.Resources>
+
+
                             <DataGrid.Columns>
-   
-                                <DataGridTemplateColumn Header="SO">
+
+                                <DataGridTemplateColumn Header="ID" SortMemberPath="ID" IsReadOnly="True">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBox MaxWidth="70" Text="{Binding So}" Style="{StaticResource GridTexBox}"/>
+                                            <TextBox Text="{Binding Id}" />
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
 
-                                <DataGridTemplateColumn Header="Serial Number">
+                                <DataGridTemplateColumn Header="Type" SortMemberPath="LogType">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBox MaxWidth="220" Text="{Binding DeviceSerial}" Style="{StaticResource GridTexBox}"/>
+                                            <TextBox Text="{Binding LogType}" />
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
 
-                                <DataGridTemplateColumn Header="Description">
+                                <DataGridTemplateColumn Header="Ref." SortMemberPath="So">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBox MaxWidth="520" Text="{Binding Description, Mode=OneWay}" Style="{StaticResource GridTexBox}"/>
+                                            <TextBox MaxWidth="70" Text="{Binding So}" />
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
 
-                                <DataGridTemplateColumn Header="Graphic Card's">
+                                <DataGridTemplateColumn Header="RP" SortMemberPath="Rp">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBox MaxWidth="340" Text="{Binding Gpu, Mode=OneWay}" Style="{StaticResource GridTexBox}"/>
+                                            <TextBox Text="{Binding Rp, Mode=OneWay}"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
 
-                                <DataGridTemplateColumn Header="Comment's">
+                                <DataGridTemplateColumn Header="Description" SortMemberPath="Description">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBox MaxWidth="520" Text="{Binding Comments, Mode=OneWay}" Style="{StaticResource GridTexBox}"/>
+                                            <TextBox MaxWidth="520" Text="{Binding Description, Mode=OneWay}"
+                                                     HorizontalAlignment="Left"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
 
-                                <DataGridTemplateColumn Header="CMAR">
+                                <DataGridTemplateColumn Header="Serial Number" SortMemberPath="DeviceSerial">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBox Text="{Binding OsCmar, Mode=OneWay}" Style="{StaticResource GridTexBox}"/>
+                                            <TextBox MaxWidth="220" Text="{Binding DeviceSerial}"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
 
-                                <DataGridTemplateColumn Header="Storage S/N">
+                                <DataGridTemplateColumn Header="CMAR" SortMemberPath="OsCmar">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBox Text="{Binding HddSn, Mode=OneWay}" Style="{StaticResource GridTexBox}"/>
+                                            <TextBox Text="{Binding OsCmar, Mode=OneWay}"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
 
-                                <DataGridTemplateColumn Header="Storage P/N">
+                                <DataGridTemplateColumn Header="Storage S/N" SortMemberPath="HddSn">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBox Text="{Binding HddPn, Mode=OneWay}" Style="{StaticResource GridTexBox}"/>
+                                            <TextBox Text="{Binding HddSn, Mode=OneWay}"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
 
-                                <DataGridTemplateColumn Header="Storage Size">
+                                <DataGridTemplateColumn Header="Storage P/N" SortMemberPath="HddPn">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBox Text="{Binding HddSize, Mode=OneWay}" Style="{StaticResource GridTexBox}"/>
+                                            <TextBox Text="{Binding HddPn, Mode=OneWay}"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
 
-                                <DataGridTemplateColumn Header="Storage Health">
+                                <DataGridTemplateColumn Header="Storage Size" SortMemberPath="HddSize">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBox Text="{Binding HddHealth, Mode=OneWay}" Style="{StaticResource GridTexBox}"/>
+                                            <TextBox Text="{Binding HddSize, Mode=OneWay}"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
 
-                                <DataGridTemplateColumn Header="Device Model">
+                                <DataGridTemplateColumn Header="Comment's" SortMemberPath="Comments">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBox Text="{Binding DeviceModel, Mode=OneWay}" Style="{StaticResource GridTexBox}"/>
+                                            <TextBox MaxWidth="520" Text="{Binding Comments, Mode=OneWay}"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
 
-                                <DataGridTemplateColumn Header="Device Type">
+                                <DataGridTemplateColumn Header="Graphic Card's" SortMemberPath="Gpu">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBox Text="{Binding Chassis, Mode=OneWay}" Style="{StaticResource GridTexBox}"/>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                                
-                                <DataGridTemplateColumn Header="CPU">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBox Text="{Binding Cpu, Mode=OneWay}" Style="{StaticResource GridTexBox}"/>
+                                            <TextBox MaxWidth="340" Text="{Binding Gpu, Mode=OneWay}"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
 
-                                <DataGridTemplateColumn Header="Memory Banks">
+                                <DataGridTemplateColumn Header="Storage Health" SortMemberPath="HddHealth">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBox Text="{Binding RamSize, Mode=OneWay}" Style="{StaticResource GridTexBox}"/>
+                                            <TextBox Text="{Binding HddHealth, Mode=OneWay}"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
 
-                                <DataGridTemplateColumn Header="Memory S/N">
+                                <DataGridTemplateColumn Header="Device Model" SortMemberPath="DeviceModel">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBox Text="{Binding RamSn, Mode=OneWay}" Style="{StaticResource GridTexBox}"/>
+                                            <TextBox Text="{Binding DeviceModel, Mode=OneWay}"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
 
-                                <DataGridTemplateColumn Header="Memory P/N">
+                                <DataGridTemplateColumn Header="Device Type" SortMemberPath="Chassis">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBox Text="{Binding RamPn, Mode=OneWay}" Style="{StaticResource GridTexBox}"/>
+                                            <TextBox Text="{Binding Chassis, Mode=OneWay}"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
 
-                                <DataGridTemplateColumn Header="ODD">
+                                <DataGridTemplateColumn Header="CPU" SortMemberPath="Cpu">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBox Text="{Binding Optical, Mode=OneWay}" Style="{StaticResource GridTexBox}"/>
+                                            <TextBox Text="{Binding Cpu, Mode=OneWay}"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
 
-                                <DataGridTemplateColumn Header="Operating System">
+                                <DataGridTemplateColumn Header="Memory Banks" SortMemberPath="RamSize">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBox Text="{Binding OsName, Mode=OneWay}" Style="{StaticResource GridTexBox}"/>
+                                            <TextBox Text="{Binding RamSize, Mode=OneWay}"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
 
-                                <DataGridTemplateColumn Header="OS Build">
+                                <DataGridTemplateColumn Header="Memory S/N" SortMemberPath="RamSn">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBox Text="{Binding OsBuild, Mode=OneWay}" Style="{StaticResource GridTexBox}"/>
+                                            <TextBox Text="{Binding RamSn, Mode=OneWay}"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
 
-                                <DataGridTemplateColumn Header="OS Language">
+                                <DataGridTemplateColumn Header="Memory P/N" SortMemberPath="RamPn">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBox Text="{Binding OsLang, Mode=OneWay}" Style="{StaticResource GridTexBox}"/>
+                                            <TextBox Text="{Binding RamPn, Mode=OneWay}"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
 
-                                <DataGridTemplateColumn Header="OS ID">
+                                <DataGridTemplateColumn Header="ODD" SortMemberPath="Optical">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBox Text="{Binding OsSerial, Mode=OneWay}" Style="{StaticResource GridTexBox}"/>
+                                            <TextBox Text="{Binding Optical, Mode=OneWay}"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
 
-                                <DataGridTemplateColumn Header="OS Key">
+                                <DataGridTemplateColumn Header="Operating System" SortMemberPath="So">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBox Text="{Binding OsKey, Mode=OneWay}" Style="{StaticResource GridTexBox}"/>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                                
-                                <DataGridTemplateColumn Header="OS Label">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBox Text="{Binding OsLabel, Mode=OneWay}" Style="{StaticResource GridTexBox}"/>
+                                            <TextBox Text="{Binding OsName, Mode=OneWay}"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
 
-                                <DataGridTemplateColumn Header="Battery P/N">
+                                <DataGridTemplateColumn Header="OS Build" SortMemberPath="OsBuild">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBox Text="{Binding BatteryPn, Mode=OneWay}" Style="{StaticResource GridTexBox}"/>
+                                            <TextBox Text="{Binding OsBuild, Mode=OneWay}"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
 
-                                <DataGridTemplateColumn Header="Battery Health">
+                                <DataGridTemplateColumn Header="OS Language" SortMemberPath="OsLang">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBox Text="{Binding BatteryHealth, Mode=OneWay}" Style="{StaticResource GridTexBox}"/>
+                                            <TextBox Text="{Binding OsLang, Mode=OneWay}"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
 
-                                <DataGridTemplateColumn Header="Battery Charge">
+                                <DataGridTemplateColumn Header="OS ID" SortMemberPath="OsSerial">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBox Text="{Binding BatteryCharge, Mode=OneWay}" Style="{StaticResource GridTexBox}"/>
+                                            <TextBox Text="{Binding OsSerial, Mode=OneWay}"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
 
-                                <DataGridTemplateColumn Header="RP">
+                                <DataGridTemplateColumn Header="OS Key" SortMemberPath="OsKey">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBox Text="{Binding Rp, Mode=OneWay}" Style="{StaticResource GridTexBox}"/>
+                                            <TextBox Text="{Binding OsKey, Mode=OneWay}"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
 
-                                <DataGridTemplateColumn Header="Time Stamp">
+                                <DataGridTemplateColumn Header="OS Label" SortMemberPath="OsLabel">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBox Text="{Binding Date, Mode=OneWay}" Style="{StaticResource GridTexBox}"/>
+                                            <TextBox Text="{Binding OsLabel, Mode=OneWay}"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
 
-                                <DataGridTextColumn Header="Log ID" Binding="{Binding Id}" IsReadOnly="True"/>
+                                <DataGridTemplateColumn Header="Battery P/N" SortMemberPath="BatteryPn">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding BatteryPn, Mode=OneWay}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="Battery Health" SortMemberPath="BatteryHealth">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding BatteryHealth, Mode=OneWay}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="Battery Charge" SortMemberPath="BatteryCharge">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding BatteryCharge, Mode=OneWay}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="Time Stamp" SortMemberPath="Date">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding Date, Mode=OneWay}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+
+                                <DataGridTextColumn Header="Hiden" Binding="{Binding LogHiden}" IsReadOnly="true" />
 
                             </DataGrid.Columns>
                         </DataGrid>
+
+                        <Grid Grid.Row="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="3*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left">
+                                <TextBlock Text="{Binding EntriesCount}" Style="{StaticResource MenuTextBlock}" Margin="10,0" Grid.Column="0"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,3">
+                                <ToggleButton Content="{Binding RefreshBtnText}" Width="110" Margin="5,0" IsChecked="{Binding RefreshIsChecked, Mode=TwoWay}"/>
+
+                                <Button Content="Edit Selected" Width="120" Command="{Binding EditSelectedCommand}"
+                                        IsEnabled="{Binding SelectedLog, Mode=OneWay,Converter={StaticResource SelectedDeviceToEnabled}}"/>
+
+                                <Button Content="Device History" Width="120" Margin="5,0" Command="{Binding DeviceHistoryCommand}"
+                                        IsEnabled="{Binding SelectedLog, Mode=OneWay,Converter={StaticResource SelectedDeviceToEnabled}}"/>
+                            </StackPanel>
+
+
+                        </Grid>
                     </Grid>
 
 
                 </TabItem>
 
+                <TabItem Header="Device History" IsSelected="{Binding HistoryTabSelected}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="0"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="0.05*"/>
+                        </Grid.RowDefinitions>
+
+                        <Grid Grid.Row="0" Margin="0,3">
+
+
+                        </Grid>
+
+
+                        <DataGrid Grid.Row="1" x:Name="hSpecDataGrid"
+                                  ItemsSource="{Binding HistoryLogs}"
+                                  SelectedItem="{Binding SelectedLog}" 
+                                  SelectionMode="Single"
+                                  HorizontalGridLinesBrush="Black" 
+                                  VerticalGridLinesBrush="#FFC7C2C2"
+                                  AreRowDetailsFrozen="True" 
+                                  IsTabStop="True"
+                                  IsTextSearchEnabled="True" 
+                                  BorderBrush="#FFF3F9FF">
+
+                            <DataGrid.Resources>
+                                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" 
+                             Color="#FF86FF6E"/>
+                                <Style TargetType="TextBox">
+                                    <Setter Property="Opacity" Value="0.2"/>
+                                    <Setter Property="Opacity" Value="{Binding LogHiden, Mode=OneWay,Converter={StaticResource LogVisibilityToOpacity}}"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                    <Setter Property="Margin" Value="5,0"/>
+                                    <Setter Property="IsReadOnly" Value="True"/>
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                    <Setter Property="SelectionBrush" Value="GhostWhite"/>
+                                </Style>
+                            </DataGrid.Resources>
+
+
+                            <DataGrid.Columns>
+
+                                <DataGridTemplateColumn Header="ID" SortMemberPath="ID" IsReadOnly="True">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding Id}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="Log" SortMemberPath="LogType">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding LogType}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="SO" SortMemberPath="So">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox MaxWidth="70" Text="{Binding So}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="RP" SortMemberPath="Rp">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding Rp, Mode=OneWay}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="Description" SortMemberPath="Description">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox MaxWidth="520" Text="{Binding Description, Mode=OneWay}"
+                                                     HorizontalAlignment="Left"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="Serial Number" SortMemberPath="DeviceSerial">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox MaxWidth="220" Text="{Binding DeviceSerial}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="CMAR" SortMemberPath="OsCmar">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding OsCmar, Mode=OneWay}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="Storage S/N" SortMemberPath="HddSn">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding HddSn, Mode=OneWay}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="Storage P/N" SortMemberPath="HddPn">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding HddPn, Mode=OneWay}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="Storage Size" SortMemberPath="HddSize">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding HddSize, Mode=OneWay}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="Comment's" SortMemberPath="Comments">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox MaxWidth="520" Text="{Binding Comments, Mode=OneWay}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="Graphic Card's" SortMemberPath="Gpu">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox MaxWidth="340" Text="{Binding Gpu, Mode=OneWay}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="Storage Health" SortMemberPath="HddHealth">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding HddHealth, Mode=OneWay}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="Device Model" SortMemberPath="DeviceModel">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding DeviceModel, Mode=OneWay}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="Device Type" SortMemberPath="Chassis">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding Chassis, Mode=OneWay}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="CPU" SortMemberPath="Cpu">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding Cpu, Mode=OneWay}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="Memory Banks" SortMemberPath="RamSize">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding RamSize, Mode=OneWay}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="Memory S/N" SortMemberPath="RamSn">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding RamSn, Mode=OneWay}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="Memory P/N" SortMemberPath="RamPn">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding RamPn, Mode=OneWay}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="ODD" SortMemberPath="Optical">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding Optical, Mode=OneWay}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="Operating System" SortMemberPath="So">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding OsName, Mode=OneWay}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="OS Build" SortMemberPath="OsBuild">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding OsBuild, Mode=OneWay}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="OS Language" SortMemberPath="OsLang">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding OsLang, Mode=OneWay}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="OS ID" SortMemberPath="OsSerial">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding OsSerial, Mode=OneWay}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="OS Key" SortMemberPath="OsKey">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding OsKey, Mode=OneWay}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="OS Label" SortMemberPath="OsLabel">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding OsLabel, Mode=OneWay}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="Battery P/N" SortMemberPath="BatteryPn">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding BatteryPn, Mode=OneWay}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="Battery Health" SortMemberPath="BatteryHealth">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding BatteryHealth, Mode=OneWay}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="Battery Charge" SortMemberPath="BatteryCharge">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding BatteryCharge, Mode=OneWay}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="Time Stamp" SortMemberPath="Date">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding Date, Mode=OneWay}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+
+                                <DataGridTextColumn Header="Hiden" Binding="{Binding LogHiden}" IsReadOnly="true" />
+
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <Grid Grid.Row="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="3*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="{Binding HistoryCount}" Style="{StaticResource MenuTextBlock}" Margin="10,0" Grid.Column="0"/>
+
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,3">
+                                <Button Content="Edit Selected" Width="120" Command="{Binding EditSelectedCommand}"
+                                        IsEnabled="{Binding SelectedLog, Mode=OneWay,Converter={StaticResource SelectedDeviceToEnabled}}"/>
+
+                                <Button Content="Device History" Width="120" Margin="5,0" Command="{Binding DeviceHistoryCommand}"
+                                        IsEnabled="{Binding SelectedLog, Mode=OneWay,Converter={StaticResource SelectedDeviceToEnabled}}"/>
+                            </StackPanel>
+
+
+                        </Grid>
+                    </Grid>
+
+
+                </TabItem>
+
+
+
             </TabControl>
 
         </Grid>
-        
+
     </Grid>
 </Window>

@@ -58,7 +58,9 @@ namespace SpecLookUp.DAL
                         OsLabel = reader.GetString("licenseLabel"),
                         OsCmar = reader.GetString("cmarLicense"),
                         Date = reader.GetString("date"),
-                        Rp = reader.GetString("rp")
+                        Rp = reader.GetString("rp"),
+                        LogType = reader.GetString("logType"),
+                        LogHiden = reader.GetBoolean("visible")
                     });
             }
             catch (Exception e)
@@ -83,22 +85,23 @@ namespace SpecLookUp.DAL
             {
                 Connection.Open();
                 cmd.Connection = Connection;
-                cmd.CommandText = "INSERT INTO Devices " +
+
+                                cmd.CommandText = "INSERT INTO Devices " +
                                   "(manufacturer,serial,model,chassisType," +
                                   "ramSizeSum,ramSize,ramPN,ramSN," +
                                   "Cpu,hddSize, hddPN, hddSN, hddHealth, " +
                                   "optical, netDevices, resolution, gpu, osName, " +
                                   "osBuild, osLanguages, osSerial, osLicense, batteryPN, " +
-                                  "batteryHealth, batterySerial, batteryCharge, deviceList, date," +
-                                  "comments, saveReference, rp, licenseLabel, cmarLicense ) " +
+                                  "batteryHealth, batterySerial, batteryCharge, " +
+                                  "comments, saveReference, rp, licenseLabel, cmarLicense, logType ) " +
                                   "SELECT " +
                                   "manufacturer,serial,model,chassisType," +
                                   "ramSizeSum,ramSize,ramPN,ramSN," +
                                   "Cpu,hddSize, hddPN, hddSN, hddHealth, " +
                                   "optical, netDevices, resolution, gpu, osName, " +
                                   "osBuild, osLanguages, osSerial, osLicense, batteryPN, " +
-                                  "batteryHealth, batterySerial, batteryCharge, deviceList, date," +
-                                  "@comments, @saveReference, @rp, @licenseLabel, @cmarLicense  " +
+                                  "batteryHealth, batterySerial, batteryCharge, " +
+                                  "@comments, @saveReference, @rp, @licenseLabel, @cmarLicense,@logType " +
                                   "FROM Devices " +
                                   "WHERE id=@id";
 
@@ -108,6 +111,7 @@ namespace SpecLookUp.DAL
                 cmd.Parameters.AddWithValue("@rp", selectedDevice.Rp);
                 cmd.Parameters.AddWithValue("@licenseLabel", selectedDevice.OsLabel);
                 cmd.Parameters.AddWithValue("@cmarLicense", selectedDevice.OsCmar);
+                cmd.Parameters.AddWithValue("@logType", selectedDevice.LogType);
                 cmd.Parameters.AddWithValue("@id", selectedDevice.Id);
 
                 cmd.ExecuteNonQuery();

@@ -13,7 +13,7 @@ namespace SpecLookUp
         {
             InitializeComponent();
             SelectedLog = selected;
-
+            TypeTBox.Text=SelectedLog.LogType;
             DeviceTBox.Text = SelectedLog.DeviceModel;
             SerialTBox.Text = SelectedLog.DeviceSerial;
             DescriptionTBox.Text = SelectedLog.Description;
@@ -34,6 +34,7 @@ namespace SpecLookUp
             SelectedLog.OsLabel = LabelTBox.Text.Trim();
             SelectedLog.OsCmar = CmarTBox.Text.Trim();
             SelectedLog.Comments = CommentsTBox.Text.Trim();
+            SelectedLog.LogType=TypeTBox.Text.Trim();
         }
 
         private void Update_Click(object sender, RoutedEventArgs e)

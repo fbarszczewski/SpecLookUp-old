@@ -4,11 +4,12 @@ using System.Windows.Data;
 
 namespace SpecLookUp.Converters
 {
-    class SelectedDeviceToEnabledConverter :IValueConverter
+    class LogVisibilityToOpacityConverter : IValueConverter
     {
+
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value != null ? true : false;
+            return (bool)value ? 0.5 : 1;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

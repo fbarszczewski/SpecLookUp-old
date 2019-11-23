@@ -11,7 +11,7 @@ namespace SpecLookUp.Model
 {
     public class AppVersion
     {
-        private static string _thisAppVer = "1.01";
+        private static string _thisAppVer = "1.2";
         public static void IsUpdated()
         {
             if (_thisAppVer != MysqlWorker.CurrentAppVersion())

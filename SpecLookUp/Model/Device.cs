@@ -9,7 +9,6 @@ namespace SpecLookUp.Model
 {
     public class Device 
     {
-        private string _deviceModel;
         public int Id { get; set; }
         public string Rp { get; set; }
         public string So { get; set; }
@@ -23,7 +22,7 @@ namespace SpecLookUp.Model
         public string Chassis { get; set; }
         public string Description
         {
-            get => $"{DeviceModel} {Cpu}\n{RamSizeSum}GB/{HddSize.Replace(Environment.NewLine,"/")}/{Optical}/{Resolution}/{OsLabel}";
+            get => $"{DeviceModel} {Cpu}\n{RamSizeSum}GB/{HddSize.Replace(Environment.NewLine, "/")}/{Optical}/{Resolution}/{OsLabel}";
         }
         public string RamSizeSum { get; set; }
         public string RamSize { get; set; }
@@ -50,7 +49,8 @@ namespace SpecLookUp.Model
         public string BatteryPn { get; set; }
         public string BatterySn { get; set; }
         public string BatteryCharge { get; set; }
-
+        public string LogType { get; set; }
+        public bool LogHiden { get; set; }
 
     }
 }
