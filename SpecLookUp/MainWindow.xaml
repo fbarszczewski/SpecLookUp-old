@@ -102,8 +102,9 @@
                                   BorderBrush="#FFF3F9FF">
 
                             <DataGrid.Resources>
-                                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" 
-                             Color="#FF86FF6E"/>
+                                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#FF86FF6E"/>
+                                <SolidColorBrush x:Key="{x:Static SystemColors.WindowBrushKey}" Color="#FFC4E1FF"/>
+                                <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#FF6BB45B"/>
                                 <Style TargetType="TextBox">
                                     <Setter Property="Opacity" Value="0.2"/>
                                     <Setter Property="Opacity" Value="{Binding LogHiden, Mode=OneWay,Converter={StaticResource LogVisibilityToOpacity}}"/>
@@ -155,7 +156,7 @@
                                 <DataGridTemplateColumn Header="Description" SortMemberPath="Description">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBox MaxWidth="520" Text="{Binding Description, Mode=OneWay}"
+                                            <TextBox Text="{Binding Description, Mode=OneWay}"
                                                      HorizontalAlignment="Left"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
@@ -164,7 +165,7 @@
                                 <DataGridTemplateColumn Header="Serial Number" SortMemberPath="DeviceSerial">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBox MaxWidth="220" Text="{Binding DeviceSerial}"/>
+                                            <TextBox Text="{Binding DeviceSerial}"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
@@ -201,10 +202,10 @@
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
 
-                                <DataGridTemplateColumn Header="Comment's" SortMemberPath="Comments">
+                                <DataGridTemplateColumn Header="Comment's" SortMemberPath="Comments" Width="200">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBox MaxWidth="520" Text="{Binding Comments, Mode=OneWay}"/>
+                                            <TextBox    Text="{Binding Comments, Mode=OneWay}"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
@@ -420,8 +421,9 @@
                                   BorderBrush="#FFF3F9FF">
 
                             <DataGrid.Resources>
-                                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" 
-                             Color="#FF86FF6E"/>
+                                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#FF86FF6E"/>
+                                <SolidColorBrush x:Key="{x:Static SystemColors.WindowBrushKey}" Color="#FFC4E1FF"/>
+                                <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#FF6BB45B"/>
                                 <Style TargetType="TextBox">
                                     <Setter Property="Opacity" Value="0.2"/>
                                     <Setter Property="Opacity" Value="{Binding LogHiden, Mode=OneWay,Converter={StaticResource LogVisibilityToOpacity}}"/>

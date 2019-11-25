@@ -59,6 +59,7 @@
       <DependentUpon>EditWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Model\AppVersion.cs" />
+    <Compile Include="Model\ExcelExport.cs" />
     <Compile Include="Model\QueryCreator.cs" />
     <Compile Include="Model\Device.cs" />
     <Compile Include="RelayCommand.cs" />
