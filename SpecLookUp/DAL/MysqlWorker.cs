@@ -76,6 +76,48 @@ namespace SpecLookUp.DAL
             return devices;
         }
 
+        public static List<CmarLog> GetCmars(string cmd)
+        {
+            var cmars = new List<CmarLog>();
+            var command = new MySqlCommand(cmd, Connection);
+
+            try
+            {
+                Connection.Open();
+
+                var reader = command.ExecuteReader();
+                while (reader.Read())
+                    cmars.Add(new CmarLog
+                    {
+                        Id = reader.GetInt32("id"),
+                        Cmar = reader.GetString("newMar"),
+                        OldCoa = reader.GetString("OldCOA"),
+                        LicenseType = reader.GetString("licenseType"),
+                        DeviceType = reader.GetString("deviceType"),
+                        Manufacturer = reader.GetString("manufacturer"),
+                        Model = reader.GetString("model"),
+                        Serial = reader.GetString("serial"),
+                        Cpu = reader.GetString("cpu"),
+                        So = reader.GetString("reference"),
+                        Rp = reader.GetString("rp"),
+                        InstallDate = reader.GetString("installdate")
+                    });
+            }
+            catch (Exception e)
+            {
+                cmars.Add(new CmarLog {Cmar = e.Message});
+            }
+            finally
+            {
+                if (Connection != null) Connection.Close();
+            }
+
+            command.Dispose();
+
+
+            return cmars;
+        }
+
         public static bool UpdateDevice(Device selectedDevice)
         {
             var succeed = false;

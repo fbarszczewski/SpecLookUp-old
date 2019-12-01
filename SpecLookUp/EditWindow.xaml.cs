@@ -23,6 +23,7 @@ namespace SpecLookUp
             LabelTBox.Text = SelectedLog.OsLabel;
             CmarTBox.Text = SelectedLog.OsCmar;
             CommentsTBox.Text = SelectedLog.Comments;
+
         }
 
         public Device SelectedLog { get; set; }

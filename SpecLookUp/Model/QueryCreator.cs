@@ -4,7 +4,7 @@ namespace SpecLookUp.Model
 {
     public class QueryCreator
     {
-        private const string QueryBody = "SELECT " +
+        private const string DeviceQueryBody = "SELECT " +
                                             "saveReference, serial, cmarLicense, comments, gpu, " +
                                             "model, Cpu, ramSize, ramPN, ramSN, " +
                                             "hddSize, hddPN, hddSN, hddHealth, " +
@@ -38,11 +38,11 @@ namespace SpecLookUp.Model
 
             if (searchList.Count>0)
             {
-                query = $"{QueryBody} WHERE {string.Join(" AND ", searchList)} ORDER BY id DESC LIMIT {limit} ";
+                query = $"{DeviceQueryBody} WHERE {string.Join(" AND ", searchList)} ORDER BY id DESC LIMIT {limit} ";
             }
             else
             {
-                query = $"{QueryBody}  ORDER BY id DESC LIMIT {limit} ";
+                query = $"{DeviceQueryBody}  ORDER BY id DESC LIMIT {limit} ";
             }
 
 
@@ -54,7 +54,23 @@ namespace SpecLookUp.Model
         /// </summary>
         public static string History(string sn)
         {
-            return $"{QueryBody} WHERE serial='{sn}' ORDER BY id DESC";
+            return $"{DeviceQueryBody} WHERE serial='{sn}' ORDER BY id DESC";
+        }
+
+        public static string Cmar(int month, string year, string cmar)
+        {
+
+            if(string.IsNullOrWhiteSpace(cmar))
+            {
+                //2019-11-06 11:18:57
+                return $"SELECT * FROM Licenses WHERE installDate BETWEEN '{year}-{month}-1 00:00:01' AND '{year}-{(month+1)}-31 23:59:59'";
+            }
+            else
+            {
+                return $"SELECT * FROM Licenses WHERE newMar IS LIKE '%{cmar}%'";
+            }
+
+
         }
     }
 

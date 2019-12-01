@@ -17,9 +17,8 @@
             <Setter Property="AutoGenerateColumns" Value="False"/>
             <Setter Property="AlternatingRowBackground" Value="#FFE8F7FF"/>
             <Setter Property="CanUserAddRows" Value="False"/>
-
-
         </Style>
+        
 
 
 
@@ -35,7 +34,7 @@
 
             <TabControl>
 
-                <TabItem Header="Database">
+                <TabItem Header="Device's Database">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="35"/>
@@ -46,16 +45,17 @@
                         <Grid Grid.Row="0" Margin="0,3">
 
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="19*"/>
+                                <ColumnDefinition Width="2*"/>
                             </Grid.ColumnDefinitions>
 
-                            <StackPanel Orientation="Horizontal" Grid.Column="0" HorizontalAlignment="Left">
+                            <StackPanel Orientation="Horizontal" Grid.Column="0" HorizontalAlignment="Left" Width="1401">
                                 <StackPanel.InputBindings>
-                                    <KeyBinding Command="{Binding SearchCommand}" Key="Return"/>
+                                    <KeyBinding Command="{Binding DeviceSearchCommand}" Key="Return"/>
                                 </StackPanel.InputBindings>
 
 
-                                <Button Content="Search" Width="120" Command="{Binding SearchCommand}"/>
+                                <Button Content="Search" Width="120" Command="{Binding DeviceSearchCommand}"/>
                                 <ComboBox x:Name="TypeCBox" IsEditable="True" Width="60" Height="24" Margin="5,0" Text="{Binding LogTypeInput}">
                                     <ComboBoxItem Content="SO"/>
                                     <ComboBoxItem Content="PO"/>
@@ -65,10 +65,10 @@
                                 </ComboBox>
                                 <TextBlock Text="Log Reference:" Style="{StaticResource MenuTextBlock}"/>
                                 <TextBox Width="90" Margin="0,2" Text="{Binding LogReferenceInput, UpdateSourceTrigger=PropertyChanged}"/>
-                                
+
                                 <TextBlock Text="Device S/N:" Style="{StaticResource MenuTextBlock}"/>
                                 <TextBox Width="190" Margin="0,2" Text="{Binding DeviceSnInput, UpdateSourceTrigger=PropertyChanged}"/>
-                                
+
                                 <TextBlock Text="Storage S/N:" Style="{StaticResource MenuTextBlock}"/>
                                 <TextBox Width="190" Margin="0,2" Text="{Binding StorageSnInput, UpdateSourceTrigger=PropertyChanged}"/>
 
@@ -83,9 +83,9 @@
                                     <ComboBoxItem Content="1000"/>
                                 </ComboBox>
                                 <CheckBox x:Name="DeepSearchBox"  Content="Show hidden" VerticalAlignment="Center" IsChecked="{Binding SearchHiddenInput}"/>
-
-
                             </StackPanel>
+                            <ToggleButton Content="{Binding RefreshBtnText}" Grid.Column="1" Margin="5,0" IsChecked="{Binding RefreshIsChecked, Mode=TwoWay}" />
+
 
                         </Grid>
 
@@ -213,7 +213,15 @@
                                 <DataGridTemplateColumn Header="Graphic Card's" SortMemberPath="Gpu">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <TextBox MaxWidth="340" Text="{Binding Gpu, Mode=OneWay}"/>
+                                            <TextBox Text="{Binding Gpu, Mode=OneWay}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="Resolution" SortMemberPath="Resolution">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding Resolution, Mode=OneWay}"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
@@ -368,25 +376,28 @@
                             </DataGrid.Columns>
                         </DataGrid>
 
-                        <Grid Grid.Row="2">
+                        <Grid Grid.Row="2" Margin="0,2,0,0">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="3*"/>
+                                <ColumnDefinition Width="300"/>
                                 <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="180"/>
+                                <ColumnDefinition Width="180"/>
+                                <ColumnDefinition Width="180"/>
+
+
                             </Grid.ColumnDefinitions>
 
                             <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left">
-                                <TextBlock Text="{Binding EntriesCount}" Style="{StaticResource MenuTextBlock}" Margin="10,0" Grid.Column="0"/>
+                                <TextBlock Text="{Binding DeviceLogCount}" Style="{StaticResource MenuTextBlock}" Margin="10,0" Grid.Column="0"/>
                             </StackPanel>
 
-                            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,3">
-                                <ToggleButton Content="{Binding RefreshBtnText}" Width="110" Margin="5,0" IsChecked="{Binding RefreshIsChecked, Mode=TwoWay}"/>
+                            <Button Content="Export to Excel" Grid.Column="2" Margin="5,0" Command="{Binding ExportDeviceCommand}"/>
 
-                                <Button Content="Edit Selected" Width="120" Command="{Binding EditSelectedCommand}"
+                            <Button Content="Edit Selected" Grid.Column="3" Margin="5,0" Command="{Binding EditSelectedCommand}"
                                         IsEnabled="{Binding SelectedLog, Mode=OneWay,Converter={StaticResource SelectedDeviceToEnabled}}"/>
 
-                                <Button Content="Device History" Width="120" Margin="5,0" Command="{Binding DeviceHistoryCommand}"
+                            <Button Content="Device History" Grid.Column="4" Margin="5,0" Command="{Binding DeviceHistoryCommand}"
                                         IsEnabled="{Binding SelectedLog, Mode=OneWay,Converter={StaticResource SelectedDeviceToEnabled}}"/>
-                            </StackPanel>
 
 
                         </Grid>
@@ -409,7 +420,7 @@
                         </Grid>
 
 
-                        <DataGrid Grid.Row="1" x:Name="hSpecDataGrid"
+                        <DataGrid Grid.Row="1" x:Name="HistorySpecDataGrid"
                                   ItemsSource="{Binding HistoryLogs}"
                                   SelectedItem="{Binding SelectedLog}" 
                                   SelectionMode="Single"
@@ -693,23 +704,219 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
 
-                            <TextBlock Text="{Binding HistoryCount}" Style="{StaticResource MenuTextBlock}" Margin="10,0" Grid.Column="0"/>
-
-                            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,3">
-                                <Button Content="Edit Selected" Width="120" Command="{Binding EditSelectedCommand}"
-                                        IsEnabled="{Binding SelectedLog, Mode=OneWay,Converter={StaticResource SelectedDeviceToEnabled}}"/>
-
-                                <Button Content="Device History" Width="120" Margin="5,0" Command="{Binding DeviceHistoryCommand}"
-                                        IsEnabled="{Binding SelectedLog, Mode=OneWay,Converter={StaticResource SelectedDeviceToEnabled}}"/>
-                            </StackPanel>
-
-
+                            <TextBlock Text="{Binding HistoryLogCount}" Style="{StaticResource MenuTextBlock}" Margin="10,0" Grid.Column="0"/>
                         </Grid>
                     </Grid>
 
 
                 </TabItem>
 
+                <TabItem Header="Registered CMAR's">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="35"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="0.05*"/>
+                        </Grid.RowDefinitions>
+
+                        <Grid Grid.Row="0" Margin="0,3">
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="19*"/>
+                                <ColumnDefinition Width="2*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Orientation="Horizontal" Grid.Column="0" HorizontalAlignment="Left" Width="1401">
+                                
+                                <StackPanel.InputBindings>
+                                    <KeyBinding Command="{Binding CmarSearchCommand}" Key="Return"/>
+                                </StackPanel.InputBindings>
+
+
+                                <Button Content="Search" Width="120" Command="{Binding CmarSearchCommand}"/>
+                                <TextBlock Text="Month" Style="{StaticResource MenuTextBlock}"/>
+                                <ComboBox x:Name="MonthCBox" IsEditable="False" Width="60" Height="24" Margin="5,0" Text="{Binding MonthCmar}">
+                                    <ComboBoxItem Content="1"/>
+                                    <ComboBoxItem Content="2"/>
+                                    <ComboBoxItem Content="3"/>
+                                    <ComboBoxItem Content="4"/>
+                                    <ComboBoxItem Content="5"/>
+                                    <ComboBoxItem Content="6"/>
+                                    <ComboBoxItem Content="7"/>
+                                    <ComboBoxItem Content="8"/>
+                                    <ComboBoxItem Content="9"/>
+                                    <ComboBoxItem Content="10"/>
+                                    <ComboBoxItem Content="11"/>
+                                    <ComboBoxItem Content="12"/>
+                                </ComboBox>
+                                <TextBlock Text="Year" Style="{StaticResource MenuTextBlock}" Margin="5,0"/>
+                                <ComboBox x:Name="YearCBox" IsEditable="False" Width="65" Height="24" Margin="5,0" Text="{Binding YearCmar}">
+                                    <ComboBoxItem Content="2017"/>
+                                    <ComboBoxItem Content="2018"/>
+                                    <ComboBoxItem Content="2019"/>
+                                    <ComboBoxItem Content="2020"/>
+                                    <ComboBoxItem Content="2021"/>
+                                    <ComboBoxItem Content="2022"/>
+                                    <ComboBoxItem Content="2023"/>
+                                    <ComboBoxItem Content="2024"/>
+                                </ComboBox>
+                                <TextBlock Text=" or by CMAR:" Style="{StaticResource MenuTextBlock}"/>
+                                <TextBox Width="190" Margin="0,2" Text="{Binding CmarInput, UpdateSourceTrigger=PropertyChanged}"/>
+
+                                
+                            </StackPanel>
+                            <ToggleButton Content="{Binding RefreshBtnText}" Grid.Column="1" Margin="5,0" IsChecked="{Binding RefreshIsChecked, Mode=TwoWay}" />
+
+
+                        </Grid>
+
+
+                        <DataGrid Grid.Row="1" x:Name="CmarDataGrid"
+                                  ItemsSource="{Binding CmarLogs}"
+                                  SelectionMode="Single"
+                                  HorizontalGridLinesBrush="Black" 
+                                  VerticalGridLinesBrush="#FFC7C2C2"
+                                  AreRowDetailsFrozen="True" 
+                                  IsTabStop="True"
+                                  IsTextSearchEnabled="True" 
+                                  BorderBrush="#FFF3F9FF">
+
+                            <DataGrid.Resources>
+                                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#FF86FF6E"/>
+                                <SolidColorBrush x:Key="{x:Static SystemColors.WindowBrushKey}" Color="#FFC4E1FF"/>
+                                <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#FF6BB45B"/>
+                                <Style TargetType="TextBox">
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                    <Setter Property="Margin" Value="5,0"/>
+                                    <Setter Property="IsReadOnly" Value="True"/>
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                    <Setter Property="SelectionBrush" Value="GhostWhite"/>
+                                </Style>
+                            </DataGrid.Resources>
+
+
+                            <DataGrid.Columns>
+
+                                <DataGridTemplateColumn Header="ID" SortMemberPath="ID" IsReadOnly="True">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding Id}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="Install Date" SortMemberPath="InstallDate">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox MaxWidth="70" Text="{Binding InstallDate}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="RP" SortMemberPath="Rp">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding Rp, Mode=OneWay}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="SO" SortMemberPath="So">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding So, Mode=OneWay}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="License Type" SortMemberPath="LicenseType">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding LicenseType}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="New License" SortMemberPath="Cmar">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding Cmar, Mode=OneWay}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="Old License" SortMemberPath="OldCoa">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding OldCoa, Mode=OneWay}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="Manufacturer" SortMemberPath="Manufacturer">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding Manufacturer, Mode=OneWay}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="Model" SortMemberPath="Model">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding Model, Mode=OneWay}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="Device Type" SortMemberPath="DeviceType">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding DeviceType, Mode=OneWay}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="Serial" SortMemberPath="Serial">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding Serial, Mode=OneWay}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="Cpu" SortMemberPath="Cpu">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding Cpu, Mode=OneWay}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+
+
+
+
+
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <Grid Grid.Row="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="3*"/>
+                                <ColumnDefinition Width="200"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="{Binding HistoryCount}" Style="{StaticResource MenuTextBlock}" Margin="10,0" Grid.Column="0"/>
+                            <Button Content="Export to Excel" Grid.Column="1" Margin="5,0" Command="{Binding ExportCmarCommand}"/>
+
+                        </Grid>
+                    </Grid>
+
+
+                </TabItem>
 
 
             </TabControl>

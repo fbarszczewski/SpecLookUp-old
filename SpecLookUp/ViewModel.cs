@@ -1,11 +1,12 @@
-﻿using System;
+﻿using SpecLookUp.DAL;
+using SpecLookUp.Model;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Media;
+using System.Diagnostics;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
-using SpecLookUp.DAL;
-using SpecLookUp.Model;
 
 namespace SpecLookUp
 {
@@ -14,11 +15,24 @@ namespace SpecLookUp
         private readonly DispatcherTimer _refreshTimer;
         private List<Device> _mainLogs;
         private List<Device> _historyLogs;
+        private List<CmarLog> _cmarLogs;
         private string _refreshBtnText;
         private int _refreshCount = 10;
         private bool _refreshIsChecked;
         private bool _historyTabSelected;
         private Device _selectedLog;
+        private string _runDirectory;
+
+        private string runDirectory 
+            { 
+                get=>_runDirectory;
+                set
+                {
+                    _runDirectory=value.Substring(0, value.LastIndexOf("\\", StringComparison.Ordinal));
+                }
+            }
+
+        private MyDocuments _doc = new MyDocuments();
 
         public ViewModel()
         {
@@ -34,11 +48,14 @@ namespace SpecLookUp
             SearchLimitInput="50";
             LogTypeInput="SO";
             SearchHiddenInput=false;
+          
             MainLogs = MysqlWorker.GetDevices(QueryCreator.Device(LogReferenceInput, DeviceSnInput,StorageSnInput,CmarInput,LogTypeInput,SearchLimitInput,SearchHiddenInput));
 
         }
 
-
+        public int MonthCmar { get; set; }
+        public string YearCmar { get; set; }
+        public string Cmar { get; set; }
         public List<Device> MainLogs
         {
             get => _mainLogs;
@@ -47,9 +64,10 @@ namespace SpecLookUp
                 _mainLogs = value;
 
                 RaisePropertyChanged("MainLogs");
-                RaisePropertyChanged("EntriesCount");
+                RaisePropertyChanged("DeviceLogCount");
             }
         }
+
         public List<Device> HistoryLogs
         {
             get => _historyLogs;
@@ -58,9 +76,22 @@ namespace SpecLookUp
                 _historyLogs = value;
 
                 RaisePropertyChanged("HistoryLogs");
-                RaisePropertyChanged("HistoryCount");
+                RaisePropertyChanged("HistoryLogCount");
             }
         }
+
+        public List<CmarLog> CmarLogs
+        {
+            get => _cmarLogs;
+            set
+            {
+                _cmarLogs = value;
+
+                RaisePropertyChanged("CmarLogs");
+                RaisePropertyChanged("HistoryLogCount");
+            }
+        }
+
         public bool HistoryTabSelected 
             { 
             get => _historyTabSelected;
@@ -72,9 +103,10 @@ namespace SpecLookUp
             }
 
 
-        public string EntriesCount => $"{MainLogs.Count} found";
+        public string DeviceLogCount => $"{MainLogs.Count} found";
 
-        public string HistoryCount => HistoryLogs!=null? $"{HistoryLogs.Count} found":"";
+        public string HistoryLogCount => HistoryLogs!=null? $"{HistoryLogs.Count} found":"";
+        public string CmarLogCount => CmarLogs!=null? $"{CmarLogs.Count} found":"";
 
         public Device SelectedLog
         {
@@ -169,6 +201,13 @@ namespace SpecLookUp
             HistoryTabSelected=true;
         }
 
+        private void GetCmarList()
+        {
+            //populate dataGrid
+            CmarLogs = MysqlWorker.GetCmars(QueryCreator.Cmar(MonthCmar,YearCmar,Cmar));
+            //stop refresh 
+            RefreshStop();
+        }
 
 
         private void DisplayEditWindow()
@@ -178,17 +217,51 @@ namespace SpecLookUp
             GetDeviceList();
         }
 
+        /// <summary>
+        /// Exports displayed datagrid device and open folder where file was saved.
+        /// </summary>
+        private void ExportDeviceAndOpen(string savedDataName)
+        {
+            //Creates exel file.
+            ExcelExport.DeviceExport(_doc.UniqueFileName(savedDataName), savedDataName, MainLogs);
+            //open documents folder.
+            Process.Start(_doc.ExportPath);
+        }
+
+        /// <summary>
+        /// Exports displayed datagrid CMAR and open folder where file was saved.
+        /// </summary>
+        private void ExportCmarAndOpen(string savedDataName)
+        {
+            //Creates exel file.
+            ExcelExport.CmarExport(_doc.UniqueFileName(savedDataName), savedDataName, CmarLogs);
+            //open documents folder.
+            Process.Start(_doc.ExportPath);
+        }
 
         #region Commands
+        public ICommand ExportDeviceCommand
+        {
+            get { return new RelayCommand(argument =>ExportDeviceAndOpen("DeviceLogs")); }
+        }
+        public ICommand ExportCmarCommand
+        {
+            get { return new RelayCommand(argument =>ExportCmarAndOpen("CmarLogs")); }
+        }
 
         public ICommand EditSelectedCommand
         {
             get { return new RelayCommand(argument => DisplayEditWindow()); }
         }
 
-        public ICommand SearchCommand
+        public ICommand DeviceSearchCommand
         {
             get { return new RelayCommand(argument => GetDeviceList()); }
+        }
+
+        public ICommand CmarSearchCommand
+        {
+            get { return new RelayCommand(argument => GetCmarList()); }
         }
 
         public ICommand DeviceHistoryCommand
